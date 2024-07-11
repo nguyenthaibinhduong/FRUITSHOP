@@ -27,12 +27,22 @@
 		<!-- Login box start -->
 		<form action="" method="post">
             @csrf
+			 @csrf
+			@if (session('success'))
+				<div class="alert alert-success alert-dismissible fade show" role="alert">
+					{{ session('success') }}
+				</div>
+			@elseif(session('danger'))
+				<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					{{ session('danger') }}
+				</div>
+			@endif
 			<div class="login-box">
 				<div class="login-form">
 					<h3 class="text-center text-primary">Đăng nhập Admin</h3>
 					<div class="mb-3">
 						<label class="form-label">Email</label>
-						<input name='email' type="text" class="form-control" placeholder="Nhập email" autocomplete="off">
+						<input name='email' type="text" class="form-control" placeholder="Nhập email" >
                         @error('email')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -40,9 +50,8 @@
 					<div class="mb-3">
 						<div class="d-flex justify-content-between">
 							<label class="form-label">Mật khẩu</label>
-							<a href="forgot-password.html" class="btn-link ml-auto">Quên mật khẩu ?</a>
 						</div>
-						<input name="password" type="password" class="form-control" placeholder="Nhập mật khẩu" autocomplete="off">
+						<input name="password" type="password" class="form-control" placeholder="Nhập mật khẩu" >
                         @error('password')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror

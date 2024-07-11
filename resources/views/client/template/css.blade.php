@@ -17,6 +17,9 @@
             left: 15px;
             right: 15px;
         }
+        .owl-nav{
+            display: none;
+        }
     }
 
     /* Tablets (medium screens, 600px to 1024px) */
@@ -25,6 +28,9 @@
             top:50px;
             left: 15px;
             right: calc(45% + 6px);
+        }
+        .owl-nav{
+            display: none;
         }
     }
 
@@ -125,4 +131,5 @@
             flex-grow: 1;
             margin-right: 10px;
         }
+
 </style>

@@ -100,7 +100,7 @@ use Carbon\Carbon;
                                 </div>
                                 <div class="checkout__input__checkbox">
                                     <label for="paypal">
-                                        Chuyển khoản
+                                        Thanh toán online
                                         <input  value="0" name="payment_method" type="radio" id="paypal">
                                         <span class="checkmark">
                                             

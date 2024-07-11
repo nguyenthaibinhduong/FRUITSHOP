@@ -90,7 +90,7 @@
                     </tr>
                     <tr>
                         <td>Hình thức thanh toán</td>
-                        <td>{{ ($order->payment_method==1)?'Tiền mặt':'Chuyển khoản' }}</td>
+                        <td>{{ ($order->payment_method==1)?'Tiền mặt':'Thanh toán online' }}</td>
                     </tr>
                 </tbody>
             </table>

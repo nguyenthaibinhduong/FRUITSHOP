@@ -24,7 +24,15 @@
         <!-- Product Section Begin -->
         <section class="order_details section_gap">
             <div class="container">
+                @if($order->status == 9)
+                    <h4 class="text-center text-danger py-3 font-weight-bold">You haven't pair for order !</h4>
+                    <hr>
+                    <div class="d-flex w-100 justify-content-center">
+                        <a href="{{ route('payment',['code'=>$order->order_code]) }}" class="btn btn-dark">THANH TOÁN</a>
+                    </div>
+                @else
                 <h3 class="text-center text-success py-3 font-weight-bold">Thank you. Your order has been received !</h3>
+                @endif
                 <div class="row  pt-4 ">
                     
                     <div class="col-lg-5">
@@ -45,7 +53,7 @@
                                 </div>
                                 <div class="row my-1">
                                     <div class="col-5 font-italic">Thanh toán: </div>
-                                    <div class="col-7">{{ ($order->payment_method==1)?'Tiền mặt':'Chuyển khoản' }}</div>
+                                    <div class="col-7">{{ ($order->payment_method==1)?'Tiền mặt':'Thanh toán online' }}</div>
                                 </div>
                                 <div class="row my-1">
                                     <div class="col-5 font-italic">Tên khách hàng: </div>

@@ -56,7 +56,7 @@
                                 <td>{{ $order->order_code }}</td>
                                 <td>{{ $order->customer_name }}</td>
                                 <td>{{ number_format($order->total_price, 0, ',', '.').'đ' }}</td>
-                                <td>{{ ($order->payment_method==1)?'Tiền mặt':'Chuyển khoản' }}</td>
+                                <td>{{ ($order->payment_method==1)?'Tiền mặt':'Thanh toán online' }}</td>
                                 <td>{{ Carbon::parse($order->created_at)->format('d/m/Y h:i:s A') }}</td>
                                 <td ><i class="text-success">{{$order->statuses->name }}</i></td>
                                 <td><a class="text-primary" href="{{ route('order.detail',['id'=>$order->id]) }}">Xem chi tiết</a></td>

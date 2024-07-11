@@ -22,20 +22,20 @@ use Carbon\Carbon;
         <!-- Breadcrumb Section End -->
            <!-- Checkout Section Begin -->
     <section class="checkout spad p-5">
-        <div class="d-flex w-50 justify-content-between">
-            <div>
+        <div class="row">
+            <div class="col-xl-3 col-lg-3 col-sm-12 col-md-12 mt-2">
                 <form action="{{ route('vn-pay') }}" method="post">
                     @csrf
                     <input type="text" name="order_id" value={{ $order->id }} hidden>
-                    <button type="submit" name="redirect" class="btn btn-outline-dark">Thanh toán VNPAY <img width="80px" height="40px" src="https://stcd02206177151.cloud.edgevnpay.vn/assets/images/logo-icon/logo-primary.svg"  alt=""></button>
+                    <button type="submit" name="redirect" class="btn btn-outline-dark w-100">Thanh toán VNPAY <img width="80px" height="40px" src="https://stcd02206177151.cloud.edgevnpay.vn/assets/images/logo-icon/logo-primary.svg"  alt=""></button>
                 </form>
             </div>
            
-            <div>
-                <form action="" method="post">
+            <div  class="col-xl-3 col-lg-3 col-sm-12 col-md-12 mt-2">
+                <form action="{{ route('mm-pay') }}" method="post">
                 @csrf
                 <input type="text" name="order_id" value={{ $order->id }} hidden>
-                <button type="submit" name="redirect" class="btn btn-outline-dark ms">Thanh toán MOMO <img width="80px" height="40px" src="{{ asset('img/logo/momo_icon_square_pinkbg.svg') }}"  alt=""></button>
+                <button type="submit" class="btn btn-outline-dark w-100">Thanh toán MOMO <img width="80px" height="40px" src="{{ asset('img/logo/momo_icon_square_pinkbg.svg') }}"  alt=""></button>
             </form>
             </div>
             

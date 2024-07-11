@@ -27,19 +27,19 @@
 		<!-- Login box start -->
 		<form action="" method="post">
             @csrf
-			<div class="login-box">
+			<div class="login-box register-box">
 				<div class="login-form">
 					<h3 class="text-center text-primary">Đăng ký</h3>
                     <div class="mb-3">
 						<label class="form-label">Tên của bạn</label>
-						<input name='name' type="text" class="form-control" placeholder="Nhập tên" autocomplete="off">
+						<input name='name' type="text" class="form-control" placeholder="Nhập tên" >
                         @error('name')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
 					</div>
 					<div class="mb-3">
 						<label class="form-label">Email</label>
-						<input name='email' type="text" class="form-control" placeholder="Nhập email" autocomplete="off">
+						<input name='email' type="text" class="form-control" placeholder="Nhập email" >
                         @error('email')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -48,7 +48,7 @@
 						<div class="d-flex justify-content-between">
 							<label class="form-label">Mật khẩu</label>
 						</div>
-						<input name="password" type="password" class="form-control" placeholder="Nhập mật khẩu" autocomplete="off">
+						<input name="password" type="password" class="form-control" placeholder="Nhập mật khẩu" >
                         @error('password')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -57,8 +57,8 @@
 						<div class="d-flex justify-content-between">
 							<label class="form-label">Nhập lại mật khẩu</label>
 						</div>
-						<input name="password_confirmation" type="password" class="form-control" placeholder="Nhập mật khẩu" autocomplete="off">
-                        @error('password_confirmation')
+						<input name="password_confirmation" type="password" class="form-control" placeholder="Nhập mật khẩu" >
+                        @error('password')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
 					</div>

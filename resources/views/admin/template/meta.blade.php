@@ -14,4 +14,4 @@
 <link rel="shortcut icon" href="{{ asset('admins/assets/images/favicon.svg') }}">
 
 <!-- Title -->
-<title>Bootstrap Admin Dashboards</title>
+<title>Fruit-Admin</title>

@@ -146,7 +146,30 @@ class UserController extends Controller
         return redirect()->route('home');
     }
     public function post_register(Request $request){
+         try{
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|',
+            'password' => 'required|string|min:8|confirmed',
+        ];
         
+        // Custom error messages
+        $messages = [
+            'required' => 'Bắt buộc nhập',
+            'string' => 'Phải là kiểu kí tự',
+            'email'=>'Phải đúng định dạng email@xxxxx.com',
+            'min' => 'Mật khẩu phải nhiều hơn 8 kí tự',
+            'max' => 'Dữ liệu vượt quá cho phép',
+            'confirmed'=>"Mật khẩu không khớp"    
+        ];
+
+        // Validate the request
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // If validation fails, return back with errors
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
         $request->merge(['password'=>Hash::make($request->password)]);
         User::create($request->all());
         $user = User::where('name', '=', $request->name)
@@ -160,19 +183,69 @@ class UserController extends Controller
             'created_at' => now(), 
             'updated_at' => now(), 
         ]);
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success','Đăng ký thành công. Hãy đăng nhập tài khoản');
+    } catch (\Exception $e) {
+        // Handle other exceptions
+        return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
+    }
     }
     public function post_login(Request $request){
+         try{
+        $rules = [
+            'email' => 'required|string|email|max:255|',
+            'password' => 'required',
+        ];
+        
+        // Custom error messages
+        $messages = [
+            'required' => 'Bắt buộc nhập',
+            'string' => 'Phải là kiểu kí tự',
+            'email'=>'Phải đúng định dạng email@xxxxx.com',
+            'max' => 'Dữ liệu vượt quá cho phép',
+        ];
+
+        // Validate the request
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
         if (Auth::attempt(['email' => $request->email, 'password' =>$request->password])) {
             return redirect()->route('home');
         }
-        return redirect()->back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.']);
+         return redirect()->back()->with('danger','Email hoặc mật khẩu không đúng.');
+    } catch (\Exception $e) {
+        // Handle other exceptions
+        return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
+    }
     }
     public function post_loginadmin(Request $request){
+          try{
+        $rules = [
+            'email' => 'required|string|email|max:255|',
+            'password' => 'required',
+        ];
+        
+        // Custom error messages
+        $messages = [
+            'required' => 'Bắt buộc nhập',
+            'string' => 'Phải là kiểu kí tự',
+            'email'=>'Phải đúng định dạng email@xxxxx.com',
+            'max' => 'Dữ liệu vượt quá cho phép',
+        ];
+
+        // Validate the request
+        $validator = Validator::make($request->all(), $rules, $messages);
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
         if (Auth::attempt(['email' => $request->email, 'password' =>$request->password])) {
             return redirect()->route(config('app_define.admin_prefix'));
         }
-        return redirect()->back()->withErrors(['email' => 'Email hoặc mật khẩu không đúng.']);
+         return redirect()->back()->with('danger','Email hoặc mật khẩu không đúng.');
+    } catch (\Exception $e) {
+        // Handle other exceptions
+        return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
+    }
     }
     public function forgotPassword(){
         return view('auth.forgot-password');

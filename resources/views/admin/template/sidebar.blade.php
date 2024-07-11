@@ -15,6 +15,19 @@
 						<ul>
 							<li class="sidebar-dropdown">
 								<a href="#">
+									<i class="bi bi-house-fill"></i>
+									<span class="menu-text">Dashboard</span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href="{{ route(config('app_define.admin_prefix')) }}">Báo cáo</a>
+										</li>
+									</ul>
+								</div>
+							</li>
+							<li class="sidebar-dropdown">
+								<a href="#">
 									<i class="bi bi-collection"></i>
 									<span class="menu-text">Giao diện</span>
 								</a>
@@ -121,7 +134,22 @@
 									</ul>
 								</div>
 							</li>
-
+							<li class="sidebar-dropdown">
+								<a href="#">
+									<i class="bi bi-credit-card-2-front-fill"></i>
+									<span class="menu-text">Thanh toán online</span>
+								</a>
+								<div class="sidebar-submenu">
+									<ul>
+										<li>
+											<a href=" https://sandbox.vnpayment.vn/merchantv2/">Quản lý VNPay</a>
+										</li>
+										<li>
+											<a href="https://business.momo.vn/">Quản lý Momo</a>
+										</li>
+									</ul>
+								</div>
+							</li>
 						</ul>
 					</div>
 				</div>

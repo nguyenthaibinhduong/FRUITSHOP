@@ -41,7 +41,7 @@
 					<h3 class="text-center text-primary">Đăng nhập</h3>
 					<div class="mb-3">
 						<label class="form-label">Email</label>
-						<input name='email' type="text" class="form-control" placeholder="Nhập email" autocomplete="off">
+						<input name='email' type="text" class="form-control" placeholder="Nhập email" >
                         @error('email')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
@@ -51,7 +51,7 @@
 							<label class="form-label">Mật khẩu</label>
 							<a href="{{ route('forgot-password') }}" class="btn-link ml-auto">Quên mật khẩu ?</a>
 						</div>
-						<input name="password" type="password" class="form-control" placeholder="Nhập mật khẩu" autocomplete="off">
+						<input name="password" type="password" class="form-control" placeholder="Nhập mật khẩu" >
                         @error('password')
                         <span class="text-danger">{{ $message }}</span>
                         @enderror
