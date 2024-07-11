@@ -8,7 +8,7 @@
         <div class="humberger__menu__cart">
             <ul>
                 <li><a href="#"><i class="fa fa-heart"></i> <span>1</span></a></li>
-                <li><a id="offcanvasToggle" ><i class="fa fa-shopping-bag"></i> <span id="count_cart"></span></a></li>
+                <li><a class="offcanvasToggle" ><i class="fa fa-shopping-bag"></i> <span class="count_cart"></span></a></li>
             </ul>
         </div>
         @endif

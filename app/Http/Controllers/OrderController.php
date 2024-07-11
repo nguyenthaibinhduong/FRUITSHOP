@@ -13,7 +13,7 @@ class OrderController extends Controller
     protected $route_path='order';
 
     public function index(){
-        $orders = Order::all();
+        $orders = Order::orderBy('created_at', 'desc')->get();
         return view($this->view_path.'index',compact('orders'));
     }
     public function detail($id){

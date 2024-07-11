@@ -57,7 +57,7 @@
                     <div class="header__cart">
                         <ul>
                             <li><a href="#"><i class="fa fa-heart"></i> </a></li>
-                            <li><a id="offcanvasToggle"><i class="fa fa-shopping-bag"></i> <span id="count_cart"></span></a></li>
+                            <li><a class="offcanvasToggle"><i class="fa fa-shopping-bag"></i> <span class="count_cart"></span></a></li>
                         </ul>
                         <div class="header__cart__price"><a class="btn btn-dark" href="{{ route('logout') }}">Đăng xuất</a></div>
                     </div>

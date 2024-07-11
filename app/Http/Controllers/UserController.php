@@ -129,7 +129,7 @@ class UserController extends Controller
         $user->delete();
         $user->roles()->detach();
        
-        return redirect()->route('user.index');
+        return redirect()->route('user');
     }
     public function login(){
         return view('auth.login');
@@ -343,4 +343,5 @@ class UserController extends Controller
         }
         
     }
+    
 }

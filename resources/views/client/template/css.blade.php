@@ -20,6 +20,17 @@
         .owl-nav{
             display: none;
         }
+         .offcanvas {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: -400px; /* Bắt đầu ở bên phải ngoài màn hình */
+        width: 80vw;
+        padding: 1rem;
+        background-color: #fff; /* Đặt nền màu trắng */
+        transition: right 0.3s ease;
+        z-index: 1050;
+        }
     }
 
     /* Tablets (medium screens, 600px to 1024px) */
@@ -32,6 +43,17 @@
         .owl-nav{
             display: none;
         }
+         .offcanvas {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: -400px; /* Bắt đầu ở bên phải ngoài màn hình */
+        width: 400px;
+        padding: 1rem;
+        background-color: #fff; /* Đặt nền màu trắng */
+        transition: right 0.3s ease;
+        z-index: 1050;
+        }
     }
 
     /* Desktops (large screens, 1024px and up) */
@@ -40,6 +62,17 @@
             top:48px;
             left: 15px;
             right: calc(40% + 11px);
+        }
+        .offcanvas {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: -400px; /* Bắt đầu ở bên phải ngoài màn hình */
+        width: 400px;
+        padding: 1rem;
+        background-color: #fff; /* Đặt nền màu trắng */
+        transition: right 0.3s ease;
+        z-index: 1050;
         }
     }
     .pagination{
@@ -71,17 +104,7 @@
 
     }
 
-    .offcanvas {
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      right: -400px; /* Bắt đầu ở bên phải ngoài màn hình */
-      width: 400px;
-      padding: 1rem;
-      background-color: #fff; /* Đặt nền màu trắng */
-      transition: right 0.3s ease;
-      z-index: 1050;
-    }
+    
     .offcanvas.show {
       right: 0; /* Hiển thị offcanvas bằng cách di chuyển vào màn hình */
     }

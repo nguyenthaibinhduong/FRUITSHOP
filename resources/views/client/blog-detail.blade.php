@@ -39,7 +39,7 @@
                         </div>
                     </div>
                     <div class="col-lg-8 col-md-7 order-md-1 order-1">
-                        <div class="blog__details__text">
+                        <div class="blog__details__text px-3">
                             {!! $blog->content !!}
                         </div>
                         <div class="blog__details__content">

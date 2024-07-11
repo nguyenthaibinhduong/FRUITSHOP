@@ -67,8 +67,8 @@ class ApiController extends Controller
         return $data;
     }
     public function getProductByPrice(Request $request){
-        $minPrice = str_replace('$', '', $request->minamount);
-        $maxPrice =  str_replace('$', '', $request->maxamount);
+        $minPrice = str_replace(['.', 'đ'], '', $request->minamount);
+        $maxPrice =  str_replace(['.', 'đ'], '', $request->maxamount);
         $images = ProductImage::where('image_type',0)->get();
         $products = Product::whereBetween('price', [$minPrice, $maxPrice])
         ->orderBy('price', 'desc')

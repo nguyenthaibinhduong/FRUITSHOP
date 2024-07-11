@@ -10,6 +10,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\View;
 
@@ -103,5 +104,45 @@ class InformationController extends Controller
             ]);
         }  
         return redirect()->route($this->route_path);
+    }
+    public function newPassword(){
+        return view('client.user.new-pass');
+    }
+    public function postPassword(Request $request){
+        $rules = [
+            'oldpassword'=> 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ];
+        
+        // Custom error messages
+        $messages = [
+            'required' => 'Bắt buộc nhập',
+            'string' => 'Phải là kiểu kí tự',
+            'min' => 'Mật khẩu phải nhiều hơn 8 kí tự',
+            'confirmed'=>"Mật khẩu không khớp"    
+        ];
+        
+        // Validate the request
+        $validator = Validator::make($request->all(), $rules, $messages);
+         
+        // If validation fails, return back with errors
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+        if ($request->oldpassword != $request->password) {
+            
+            if(Auth::attempt(['email' => $request->email, 'password' =>$request->oldpassword])){
+                $user = User::where('email', $request->email)->first();
+                $user->password = Hash::make($request->password);
+                $user->save();
+                Auth::logout();
+                return redirect()->route('login')->with('success','Cập nhật mật khẩu mới thành công. Hãy đăng nhập lại');
+            }else{
+                return redirect()->back()->with('danger','Xác thực không đúng vui lòng thử lại');
+            }
+        }else{
+            return redirect()->back()->with('danger','Mật khẩu mới phải khác mật khẩu cũ');
+        }
+        
     }
 }

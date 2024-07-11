@@ -57,12 +57,12 @@
                 max: maxPrice,
                 values: [minPrice, maxPrice],
                 slide: function (event, ui) {
-                    minamount.val('$' + ui.values[0]);
-                    maxamount.val('$' + ui.values[1]);
+                    minamount.val(  ui.values[0].toLocaleString('vi-VN')+'đ');
+                    maxamount.val(  ui.values[1].toLocaleString('vi-VN')+'đ');
                 }
             });
-            minamount.val('$'+rangeSlider.slider("values", 0));
-            maxamount.val('$'+rangeSlider.slider("values", 1));
+            minamount.val(rangeSlider.slider("values", 0).toLocaleString('vi-VN')+'đ');
+            maxamount.val(rangeSlider.slider("values", 1).toLocaleString('vi-VN')+'đ');
 
             }
         })
@@ -91,7 +91,7 @@
                     url: "{{ url('api/cart-quantity') }}",
                     type: 'GET',
                     success: function(data) {
-                        $('#count_cart').html(data)
+                        $('.count_cart').html(data)
                     }
                 });
                 
@@ -138,7 +138,7 @@
         addToCart(productId, userId, token);
 
       });
-      $('#offcanvasToggle').on('click', function(event) {
+      $('.offcanvasToggle').on('click', function(event) {
         event.preventDefault();
         $('#offcanvasExample').toggleClass('show');
         $('#offcanvasBackdrop').toggleClass('show');

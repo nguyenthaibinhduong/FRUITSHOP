@@ -72,7 +72,8 @@ Route::prefix('')->group(function () use ($controller) {
         Route::post('/update/{id}', [$controller, 'update'])->name('information.update');
         Route::get('/orders', [$controller, 'orders'])->name('orders');
         Route::get('/orders-detail/{id}', [$controller, 'orderDetail'])->name('orders.detail');
-
+        Route::get('/new-password', [$controller, 'newPassword'])->name('new-password');
+        Route::post('/post-password', [$controller, 'postPassword'])->name('post-password');
     });
 });
 $admin_prefix = config('app_define.admin_prefix');
