@@ -40,8 +40,8 @@ class CustomerController extends Controller
         return view($this->path_view.'edit',compact('user'));
     }
     public function update($id,Request $request){
-        //try{
-            //dd($request->all());
+        try{
+           
             $rules = [
                 'name' => 'required|string|max:255',
                 'phone_number' => 'regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:15',
@@ -79,10 +79,10 @@ class CustomerController extends Controller
                 'birth_date'=>$request->birth_date
             ]);
             return redirect()->route('customer')->with('success','Cập nhật thành công');
-        // } catch (\Exception $e) {
-        //     // Handle other exceptions
-        //     return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
-        // }
+        } catch (\Exception $e) {
+            // Handle other exceptions
+            return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
+        }
     }
     public function delete($id){
         $user = User::find($id);

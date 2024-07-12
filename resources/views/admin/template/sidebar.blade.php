@@ -142,7 +142,7 @@
 								<div class="sidebar-submenu">
 									<ul>
 										<li>
-											<a href=" https://sandbox.vnpayment.vn/merchantv2/">Quản lý VNPay</a>
+											<a href="https://sandbox.vnpayment.vn/merchantv2/">Quản lý VNPay</a>
 										</li>
 										<li>
 											<a href="https://business.momo.vn/">Quản lý Momo</a>

@@ -17,8 +17,9 @@ class DashboardController extends Controller
         })->get()->count();
         $num_products = Product::all()->count();
         $revenue = Order::whereIn('status', $statuses)->sum('total_price');
-        $sales = round($revenue / Order::whereIn('status', $statuses)->count(), 2);
-        //dd($revenue, $num_customers, $sales, $num_products);
+        $num_orders = Order::whereIn('status', $statuses)->count();
+        $sales = ($num_orders>0)?round($revenue / $num_orders, 2):0;
+       
         return view('admin.index', compact('revenue', 'num_customers', 'sales', 'num_products'));
     }
 }

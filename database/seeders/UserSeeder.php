@@ -95,7 +95,7 @@ class UserSeeder extends Seeder
         DB::table('users')->insert([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
-            'password' => Hash::make('123'), // Mã hóa mật khẩu // Giả sử bạn có một cột is_admin để xác định người dùng là admin
+            'password' => Hash::make('12345678'), // Mã hóa mật khẩu // Giả sử bạn có một cột is_admin để xác định người dùng là admin
             'created_at' => now(),
             'updated_at' => now(),
         ]);

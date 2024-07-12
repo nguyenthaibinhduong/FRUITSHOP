@@ -28,7 +28,7 @@ class RoleController extends Controller
     }
     public function store(Request $request)
     {
-        // dd($request->all());
+       
         $roleCreate=$this->role->create([
             'name'=>$request->name,
             'display_name'=>$request->display_name,

@@ -55,7 +55,7 @@ class ShopController extends Controller
    return view('client.contact');   
    }
    public function postcontact(Request $request){
-      //dd($request->all());
+
       $admin_mail='natteam1998@gmail.com';
       $name=$request->name;
       $email=$request->email;

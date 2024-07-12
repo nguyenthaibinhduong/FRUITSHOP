@@ -41,7 +41,7 @@ class InformationController extends Controller
         return view($this->view_path.'edit',compact('customer'));
     }
     public function update($id,Request $request){
-        //dd($request->all());
+       
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email',

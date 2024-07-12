@@ -277,10 +277,9 @@ class UserController extends Controller
            $name = $request->name;
            $email = $request->email;
            $user = User::where('name',$name)->where('email',$email)->limit(1)->get();
-          //dd($user);
+          
            if($user->count()==1){
                 $token = Str::random(60);
-                //dd($name,$email);
                 DB::table('password_reset_tokens')->insert([
                     'email' => $request->email,
                     'token' => $token,

@@ -37,7 +37,7 @@ class MailController extends Controller
         return view($this->view_path.'create');
     }
     public function send(Request $request){
-        // try{
+     try{
             //dd($request->all());
       $recipient_email=$request->recipient_email;
       $subject=$request->subject;
@@ -58,10 +58,10 @@ class MailController extends Controller
         return back()->with('danger','Mail gửi không thành công');
       }
         
-        // } catch (\Exception $e) {
-        //     // Handle other exceptions
-        //     return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.');
-        // }
+        } catch (\Exception $e) {
+            // Handle other exceptions
+            return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.');
+        }
     }
     public function restore($id){
         try{

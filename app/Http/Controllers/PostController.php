@@ -70,7 +70,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //try{
+        try{
             $rules = [
                 'author'=>'required|string|max:30',
                 'title' => 'required|string|max:255',
@@ -124,10 +124,10 @@ class PostController extends Controller
             
             
             return redirect()->back()->with('success','Thêm thành công');
-        // } catch (\Exception $e) {
-        //     // Handle other exceptions
-        //     return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
-        // }
+        } catch (\Exception $e) {
+            // Handle other exceptions
+            return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
+        }
     }
 
     /**
