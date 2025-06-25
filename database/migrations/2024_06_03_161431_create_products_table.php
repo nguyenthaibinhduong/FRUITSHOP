@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->unsignedBigInteger('brand_id')->nullable();
             $table->integer('uploaded')->default(0);
+            $table->boolean('has_variants')->default(0);
             $table->timestamps();
             $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
             $table->softDeletes();

@@ -15,6 +15,7 @@ use App\Http\Controllers\MailController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\ProductAttributeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShopController;
@@ -89,7 +90,6 @@ Route::prefix($admin_prefix)->middleware('authAdmin')->group(function () use ($a
         Route::get('/edit/{id}', [$controller, 'edit'])->middleware('checkpermission:update-' . $prefix)->name($prefix . '.edit');
         Route::post('/update/{id}', [$controller, 'update'])->name($prefix . '.update');
         Route::get('/delete/{id}', [$controller, 'delete'])->middleware('checkpermission:delete-' . $prefix)->name($prefix . '.delete');
-
     });
     //===========================CATEGORY=====================
     $prefix = 'category';
@@ -126,6 +126,18 @@ Route::prefix($admin_prefix)->middleware('authAdmin')->group(function () use ($a
         Route::get('/comment/{id}', [$controller, 'showComment'])->middleware('checkpermission:show-' . $prefix)->name($prefix . '.comment');
         Route::get('/delete-comment/{id}', [$controller, 'deleteComment'])->middleware('checkpermission:show-' . $prefix)->name($prefix . '.comment.delete');
     });
+    //===========================ATTRIBUTE=====================
+    $prefix = 'attribute';
+    $controller = ProductAttributeController::class;
+    Route::prefix($prefix)->group(function () use ($controller, $prefix) {
+        Route::get('/', [$controller, 'index'])->name($prefix);
+        Route::get('/create', [$controller, 'create'])->name($prefix . '.create');
+        Route::post('/store', [$controller, 'store'])->name($prefix . '.store');
+        Route::get('/edit/{id}', [$controller, 'edit'])->name($prefix . '.edit');
+        Route::put('/update/{id}', [$controller, 'update'])->name($prefix . '.update');
+        Route::get('/delete/{id}', [$controller, 'delete'])->name($prefix . '.delete');
+    });
+
     //===========================TYPE POST=====================
     $prefix = 'type';
     $controller = TypeController::class;
@@ -137,7 +149,7 @@ Route::prefix($admin_prefix)->middleware('authAdmin')->group(function () use ($a
         Route::post('/update/{id}', [$controller, 'update'])->name($prefix . '.update');
         Route::get('/delete/{id}', [$controller, 'delete'])->middleware('checkpermission:delete-' . $prefix)->name($prefix . '.delete');
     });
-    //===========================TYPE POST=====================
+    //=========================== POST=====================
     $prefix = 'post';
     $controller = PostController::class;
     Route::prefix($prefix)->group(function () use ($controller, $prefix) {
@@ -241,6 +253,15 @@ Route::prefix('api')->group(function () {
     Route::get('/update-comment/{id}', [CommentController::class, 'update'])->name('comments.update');
     Route::get('/delete-comment/{id}', [CommentController::class, 'delete'])->name('comments.delete');
 
+    Route::get('/attributes', [ProductAttributeController::class, 'index'])->name('api.attribute.index');
+    Route::get('/attribute/{id}', [ProductAttributeController::class, 'show'])->name('api.attribute.show');
+    Route::post('/attribute', [ProductAttributeController::class, 'store'])->name('api.attribute.store');
+    Route::put('/attribute/{id}', [ProductAttributeController::class, 'update'])->name('api.attribute.update');
+    Route::delete('/attribute/{id}', [ProductAttributeController::class, 'destroy'])->name('api.attribute.delete');
+
+    // ✅ Value APIs
+    Route::post('/attribute/{id}/value', [ProductAttributeController::class, 'addValue'])->name('api.attribute.value.add');
+    Route::delete('/attribute/value/{value_id}', [ProductAttributeController::class, 'deleteValue'])->name('api.attribute.value.delete');
 });
 //===========Payment============//
 Route::prefix('payment')->group(function () {

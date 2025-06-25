@@ -15,45 +15,46 @@ use DateTime;
 
 class PostController extends Controller
 {
-    protected $view_path='admin.post.';
-    protected $route_path='post';
-    protected $upload_path='img/post';
+    protected $view_path = 'admin.post.';
+    protected $route_path = 'post';
+    protected $upload_path = 'img/post';
     protected $type;
     /**
      * Display a listing of the resource.
      */
     public function __construct(Type $type)
     {
-        $this->type= $type;
-
+        $this->type = $type;
     }
-    public function showComment($id){
+    public function showComment($id)
+    {
         $post = Post::find($id);
         $comments = $post->comments()->orderBy('created_at', 'desc')->paginate(5);
-        return view('admin.post.comment',compact('comments'));
+        return view('admin.post.comment', compact('comments'));
     }
-    public function deleteComment($id){
-        try{
-        Comment::find($id)->delete();
-         return redirect()->back()->with('success','Xóa thành công');
+    public function deleteComment($id)
+    {
+        try {
+            Comment::find($id)->delete();
+            return redirect()->back()->with('success', 'Xóa thành công');
         } catch (\Exception $e) {
             // Handle other exceptions
-            return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
+            return back()->with('danger', 'Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
         }
     }
     public function getCategories($parent_id)
-   {
-       $data = $this->type->all();
-       $recusive = new Recusive($data);
-       $option = $recusive->typeRecusive($parent_id);
-       return $option;
-   }
+    {
+        $data = $this->type->all();
+        $recusive = new Recusive($data);
+        $option = $recusive->typeRecusive($parent_id);
+        return $option;
+    }
     public function index()
     {
         $types = Type::all();
         $selected_types = DB::table('post_types')->get();
         $posts = Post::all();
-        return view($this->view_path.'index',compact('posts','selected_types','types'));
+        return view($this->view_path . 'index', compact('posts', 'selected_types', 'types'));
     }
 
     /**
@@ -61,8 +62,8 @@ class PostController extends Controller
      */
     public function create()
     {
-        $option= $this->getCategories($parent_id='');
-        return view($this->view_path.'create',compact('option'));
+        $option = $this->getCategories($parent_id = '');
+        return view($this->view_path . 'create', compact('option'));
     }
 
     /**
@@ -70,16 +71,16 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        try{
+        try {
             $rules = [
-                'author'=>'required|string|max:30',
+                'author' => 'required|string|max:30',
                 'title' => 'required|string|max:255',
                 'subtitle' => 'required|string|max:255',
                 'type_id' => 'required',
                 'content' => 'required|string|min:50',
                 'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             ];
-            
+
             // Custom error messages
             $messages = [
                 'required' => 'Bắt buộc nhập',
@@ -91,22 +92,22 @@ class PostController extends Controller
                 'image' => 'Phải là file ảnh',
                 'mimes' => 'Định dạng không hợp lệ',
             ];
-    
+
             // Validate the request
             $validator = Validator::make($request->all(), $rules, $messages);
-    
+
             // If validation fails, return back with errors
             if ($validator->fails()) {
                 return back()->withErrors($validator)->withInput();
             }
-            if ($request->hasFile('image')){
-                $imageName = time().'.'.$request->image->extension();  
+            if ($request->hasFile('image')) {
+                $imageName = time() . '.' . $request->image->extension();
                 $request->image->move(public_path($this->upload_path), $imageName);
-                $url =$this->upload_path.'/'.$imageName;
+                $url = $this->upload_path . '/' . $imageName;
             }
 
-          
-            $date_public = ($request->uploaded==1)?(new DateTime()):null;
+
+            $date_public = ($request->uploaded == 1) ? (new DateTime()) : null;
             $post = new Post();
             $post->author = $request->author;
             $post->title = $request->title;
@@ -117,16 +118,16 @@ class PostController extends Controller
             $post->user_id = Auth::user()->id;
             $post->public_date =  $date_public;
             $post->save();
-           
-            foreach($request->type_id as $id){
+
+            foreach ($request->type_id as $id) {
                 $post->types()->attach($id);
             }
-            
-            
-            return redirect()->back()->with('success','Thêm thành công');
+
+
+            return redirect()->back()->with('success', 'Thêm thành công');
         } catch (\Exception $e) {
             // Handle other exceptions
-            return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
+            return back()->with('danger', 'Đã xảy ra lỗi. Vui lòng thử lại.')->withInput();
         }
     }
 
@@ -144,12 +145,12 @@ class PostController extends Controller
     public function edit(string $id)
     {
         $selected_types = DB::table('post_types')
-        ->where('post_id',$id)
-        ->pluck('type_id')
-        ->toArray();
+            ->where('post_id', $id)
+            ->pluck('type_id')
+            ->toArray();
         $types = Type::all();
         $post = Post::find($id);
-        return view($this->view_path.'edit',compact('post','selected_types','types'));
+        return view($this->view_path . 'edit', compact('post', 'selected_types', 'types'));
     }
 
     /**
@@ -157,18 +158,18 @@ class PostController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        try{
+        try {
 
-            
+
             $rules = [
-                'author'=>'required|string|max:30',
+                'author' => 'required|string|max:30',
                 'title' => 'required|string|max:255',
                 'subtitle' => 'required|string|max:255',
                 'type_id' => 'required',
                 'content' => 'required|string|min:50',
                 'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             ];
-            
+
             // Custom error messages
             $messages = [
                 'required' => 'Bắt buộc nhập',
@@ -189,46 +190,43 @@ class PostController extends Controller
             }
             $post = Post::find($id);
 
-            if($request->hasFile('image')){
-                $imageName = time().'.'.$request->image->extension();  
+            if ($request->hasFile('image')) {
+                $imageName = time() . '.' . $request->image->extension();
                 $request->image->move(public_path($this->upload_path), $imageName);
-                $url =$this->upload_path.'/'.$imageName;
-            }else{
+                $url = $this->upload_path . '/' . $imageName;
+            } else {
                 $url = $post->image;
             }
             DB::table('post_types')->where('post_id', $id)->delete();
-            foreach($request->type_id as $type_id){
+            foreach ($request->type_id as $type_id) {
                 $post->types()->attach($type_id);
             }
-            
-            if($post->uploaded==0 && $request->uploaded==1){
+
+            if ($post->uploaded == 0 && $request->uploaded == 1) {
                 $public_date = new DateTime();
-            }
-            else if($post->uploaded==1 && $request->uploaded==0){
+            } else if ($post->uploaded == 1 && $request->uploaded == 0) {
                 $public_date = null;
-            }
-            else{
+            } else {
                 $public_date = $post->public_date;
             }
             $post->update([
-                'author'=>$request->author,
-                'title'=>$request->title,
-                'subtitle'=>$request->subtitle,
-                'content'=>$request->content,
-                'user_id'=>Auth::user()->id,
-                'image'=>$url,
-                'public_date'=>$public_date,
-                'uploaded'=>$request->uploaded,
+                'author' => $request->author,
+                'title' => $request->title,
+                'subtitle' => $request->subtitle,
+                'content' => $request->content,
+                'user_id' => Auth::user()->id,
+                'image' => $url,
+                'public_date' => $public_date,
+                'uploaded' => $request->uploaded,
             ]);
-            
-            
-            
-            return redirect()->route($this->route_path)->with('success', 'Cập nhật thành công');
-        }catch (\Exception $e) {
-            // Handle other exceptions
-            return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.');
-        }
 
+
+
+            return redirect()->route($this->route_path)->with('success', 'Cập nhật thành công');
+        } catch (\Exception $e) {
+            // Handle other exceptions
+            return back()->with('danger', 'Đã xảy ra lỗi. Vui lòng thử lại.');
+        }
     }
 
     /**
@@ -236,15 +234,14 @@ class PostController extends Controller
      */
     public function delete(string $id)
     {
-        try{
+        try {
             $post = Post::find($id);
             unlink($post->image);
             $post->delete();
-            return redirect()->back()->with('success','Đã xóa thành công');
-        }catch (\Exception $e) {
+            return redirect()->back()->with('success', 'Đã xóa thành công');
+        } catch (\Exception $e) {
             // Handle other exceptions
-            return back()->with('danger','Đã xảy ra lỗi. Vui lòng thử lại.');
+            return back()->with('danger', 'Đã xảy ra lỗi. Vui lòng thử lại.');
         }
-
     }
 }

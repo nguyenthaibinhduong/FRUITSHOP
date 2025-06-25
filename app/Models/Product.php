@@ -10,7 +10,7 @@ class Product extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $fillable=[
+    protected $fillable = [
         'name',
         'description',
         'longdescription',
@@ -26,7 +26,7 @@ class Product extends Model
     }
     public function brand()
     {
-        return $this->belongsTo(Brand::class,'brand_id');
+        return $this->belongsTo(Brand::class, 'brand_id');
     }
     public function image()
     {
@@ -35,5 +35,9 @@ class Product extends Model
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');
+    }
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 }
