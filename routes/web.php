@@ -260,6 +260,7 @@ Route::prefix('api')->group(function () {
     Route::delete('/attribute/{id}', [ProductAttributeController::class, 'destroy'])->name('api.attribute.delete');
 
     // ✅ Value APIs
+    Route::get('/attribute/{id}/values', [ProductAttributeController::class, 'getValues']);
     Route::post('/attribute/{id}/value', [ProductAttributeController::class, 'addValue'])->name('api.attribute.value.add');
     Route::delete('/attribute/value/{value_id}', [ProductAttributeController::class, 'deleteValue'])->name('api.attribute.value.delete');
 });

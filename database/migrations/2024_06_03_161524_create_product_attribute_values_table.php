@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('product_attribute_values', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('product_attribute_id')->constrained('product_attributes')->onDelete('cascade');
+            $table->string('label');
             $table->string('value'); // đỏ, xanh, S, M, L...
             $table->timestamps();
         });

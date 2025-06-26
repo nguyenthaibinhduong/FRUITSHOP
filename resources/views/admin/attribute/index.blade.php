@@ -52,7 +52,22 @@
                                         <td>{{ $attribute->name }}</td>
                                         <td>
                                             @foreach ($attribute->values as $value)
-                                                <span class="badge bg-secondary">{{ $value->value }}</span>
+                                                @if ($attribute->display_type === 'color')
+                                                    <span class="badge me-1"
+                                                        style="background-color: {{ $value->value }}; color: #fff;">
+                                                        {{ $value->label ?? $value->value }}
+                                                    </span>
+                                                @elseif ($attribute->display_type === 'image')
+                                                    <span class="me-1">
+                                                        <img src="{{ asset($value->value) }}" alt="{{ $value->label }}"
+                                                            style="width: 30px; height: 30px; object-fit: cover; border-radius: 4px;">
+                                                        <small>{{ $value->label }}</small>
+                                                    </span>
+                                                @else
+                                                    <span class="badge bg-secondary me-1">
+                                                        {{ $value->value }}
+                                                    </span>
+                                                @endif
                                             @endforeach
                                         </td>
                                         <td class="text-end">

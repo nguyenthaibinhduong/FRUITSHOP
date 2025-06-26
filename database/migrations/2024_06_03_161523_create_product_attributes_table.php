@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('product_attributes', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // màu sắc, kích thước, chất liệu...
+            $table->enum('display_type', ['text', 'color', 'image'])->default('text');
             $table->timestamps();
         });
     }

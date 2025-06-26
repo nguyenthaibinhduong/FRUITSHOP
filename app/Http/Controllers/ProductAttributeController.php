@@ -10,6 +10,7 @@ class ProductAttributeController extends Controller
 {
     protected $view_path = 'admin.attribute.';
     protected $route_path = 'attribute';
+    protected $upload_path = 'img/attribute';
 
     // Danh sách thuộc tính
     public function index(Request $request)
@@ -31,20 +32,58 @@ class ProductAttributeController extends Controller
     // Tạo mới thuộc tính
     public function store(Request $request)
     {
+        // dd($request->all());
+
         $request->validate([
-            'name' => 'required|string|unique:product_attributes,name',
+            'name' => 'required|string',
+            'display_type' => 'required|in:text,color,image',
             'values' => 'required|array|min:1',
-            'values.*' => 'required|string|distinct'
         ], [
-            'values.required' => 'Vui lòng thêm ít nhất một giá trị thuộc tính.',
-            'values.*.required' => 'Giá trị thuộc tính không được để trống.',
-            'values.*.distinct' => 'Các giá trị không được trùng nhau.'
+            'values.required' => 'Vui lòng thêm ít nhất một giá trị thuộc tính.'
         ]);
 
-        $attribute = ProductAttribute::create(['name' => $request->name]);
+        $attribute = ProductAttribute::create([
+            'name' => $request->name,
+            'display_type' => $request->display_type,
+        ]);
 
-        foreach ($request->values as $value) {
-            $attribute->values()->create(['value' => trim($value)]);
+        foreach ($request->values as $index => $value) {
+            $label = $request->value_labels[$index] ?? null;
+
+            switch ($request->display_type) {
+                case 'color':
+                    $color = $request->colors[$index] ?? null;
+                    if ($color) {
+                        $attribute->values()->create([
+                            'value' => $color,
+                            'label' => $label,
+                        ]);
+                    }
+                    break;
+
+                case 'image':
+                    if ($request->hasFile("images.$index")) {
+                        $file = $request->file("images.$index");
+                        $imageName = time() . "_$index." . $file->getClientOriginalExtension();
+                        $file->move(public_path($this->upload_path), $imageName);
+                        $url = $this->upload_path . $imageName;
+
+                        $attribute->values()->create([
+                            'value' => $url,
+                            'label' => $label,
+                        ]);
+                    }
+                    break;
+
+                default: // text
+                    if (!empty($value)) {
+                        $attribute->values()->create([
+                            'value' => trim($value),
+                            'label' => trim($value)
+                        ]);
+                    }
+                    break;
+            }
         }
 
         if ($request->expectsJson()) {
@@ -77,32 +116,57 @@ class ProductAttributeController extends Controller
     {
         $request->validate([
             'name' => 'required|string|unique:product_attributes,name,' . $id,
+            'display_type' => 'required|in:text,color,image',
             'values' => 'required|array|min:1',
-            'values.*' => 'required|string|distinct'
+            'values.*' => 'nullable|string',
+            'colors.*' => 'nullable|string',
+            'images.*' => 'nullable|file|image|max:2048',
+            'value_labels.*' => 'nullable|string'
         ], [
             'values.required' => 'Vui lòng nhập ít nhất một giá trị.',
-            'values.*.required' => 'Giá trị thuộc tính không được để trống.',
-            'values.*.distinct' => 'Các giá trị không được trùng nhau.'
+            'values.*.required' => 'Giá trị không được để trống.',
         ]);
 
         $attribute = ProductAttribute::with('values')->findOrFail($id);
-        $attribute->update(['name' => $request->name]);
+        $attribute->update([
+            'name' => $request->name,
+            'display_type' => $request->display_type
+        ]);
 
-        $newValues = collect($request->values)->map(fn($v) => trim($v))->filter();
+        // Xoá toàn bộ values cũ
+        $attribute->values()->delete();
 
-        // Lấy danh sách giá trị hiện tại
-        $existingValues = $attribute->values->pluck('value')->toArray();
+        foreach ($request->values as $index => $value) {
+            $data = [];
 
-        // Tìm giá trị cần xoá
-        $valuesToDelete = array_diff($existingValues, $newValues->toArray());
-        if (!empty($valuesToDelete)) {
-            $attribute->values()->whereIn('value', $valuesToDelete)->delete();
-        }
+            switch ($request->display_type) {
+                case 'text':
+                    if ($value) {
+                        $data['value'] = $value;
+                    }
+                    break;
 
-        // Tìm giá trị cần thêm mới
-        $valuesToAdd = array_diff($newValues->toArray(), $existingValues);
-        foreach ($valuesToAdd as $value) {
-            $attribute->values()->create(['value' => $value]);
+                case 'color':
+                    $data['value'] = $request->colors[$index] ?? '#000000';
+                    $data['label'] = $request->value_labels[$index] ?? null;
+                    break;
+
+                case 'image':
+                    if ($request->hasFile("images.$index")) {
+                        $imageFile = $request->file("images.$index");
+                        $imageName = time() . '_' . uniqid() . '.' . $imageFile->getClientOriginalExtension();
+                        $imageFile->move(public_path($this->upload_path), $imageName);
+                        $data['value'] = $this->upload_path . $imageName;
+                    } else {
+                        $data['value'] = null; // hoặc giữ nguyên giá trị cũ nếu muốn
+                    }
+                    $data['label'] = $request->value_labels[$index] ?? null;
+                    break;
+            }
+
+            if (!empty($data['value'])) {
+                $attribute->values()->create($data);
+            }
         }
 
         if ($request->expectsJson()) {
@@ -112,14 +176,29 @@ class ProductAttributeController extends Controller
         return redirect()->route('attribute.index')->with('success', 'Cập nhật thành công');
     }
 
+
     // Xoá thuộc tính
     public function delete(Request $request, $id)
     {
-        $attribute = ProductAttribute::findOrFail($id);
+        $attribute = ProductAttribute::with('values')->findOrFail($id);
+
+        // Xóa ảnh nếu có
+        if ($attribute->display_type === 'image') {
+            foreach ($attribute->values as $value) {
+                if (!empty($value->value) && file_exists(public_path($value->value))) {
+                    @unlink(public_path($value->value));
+                }
+            }
+        }
+
+        // Xoá các giá trị con
+        $attribute->values()->delete();
+
+        // Xoá chính thuộc tính
         $attribute->delete();
 
         if ($request->expectsJson()) {
-            return response()->json(['message' => 'Đã xoá thuộc tính']);
+            return response()->json(['message' => 'Đã xoá thuộc tính và dữ liệu liên quan']);
         }
 
         return redirect()->back()->with('success', 'Xoá thuộc tính thành công');
@@ -148,5 +227,11 @@ class ProductAttributeController extends Controller
             return response()->json(['message' => 'Đã xoá giá trị']);
         }
         return redirect()->back()->with('success', 'Xoá giá trị thành công');
+    }
+
+    public function getValues($id)
+    {
+        $attribute = ProductAttribute::with('values')->findOrFail($id);
+        return response()->json($attribute->values);
     }
 }
