@@ -19,6 +19,7 @@ class Product extends Model
         'quantity',
         'uploaded',
         'brand_id',
+        'has_variants'
     ];
     public function categories()
     {

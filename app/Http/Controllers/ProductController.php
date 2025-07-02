@@ -11,6 +11,7 @@ use App\Models\ProductAttribute;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\ProductVariantAttribute;
+use Carbon\Exceptions\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -42,9 +43,9 @@ class ProductController extends Controller
         $categories = Category::all();
         $selected_categories = DB::table('product_categories')->get();
         $images = ProductImage::where('image_type', 0)->get();
-        $products = Product::paginate(5);
+        $products = Product::with('variants')->paginate(11);
         $attributes = ProductAttribute::with('values')->get();
-
+        // dd($products);
         return view($this->view_path . 'index', compact('products', 'images', 'selected_categories', 'categories', 'attributes'));
     }
     public function showComment($id)
@@ -129,6 +130,7 @@ class ProductController extends Controller
         $product->description = $request->description ?? ' ';
         $product->longdescription = $request->longdescription ?? ' ';
         $product->brand_id = $request->brand_id;
+        $product->has_variants = ($request->has('is_variable') && $request->is_variable === 'on') ? 1 : 0;
         $product->uploaded = $request->uploaded;
         $product->save();
 
@@ -208,9 +210,12 @@ class ProductController extends Controller
             ->toArray();
         $categories = Category::all();
         $brands = $this->brand->all();
+        $option = $this->getCategories($parent_id = '');
         $images = ProductImage::where('product_id', $id)->get();
-        $product = Product::find($id);
-        return view($this->view_path . 'edit', compact('product', 'images', 'selected_categories', 'categories', 'brands'));
+        $product = Product::with('variants')->find($id);
+        $attributes = ProductAttribute::with('values')->get();
+        // dd($attributes, $product);
+        return view($this->view_path . 'edit', compact('product', 'images', 'selected_categories', 'categories', 'brands', 'attributes', 'option'));
     }
 
     /**

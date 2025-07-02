@@ -8,10 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class ProductAttribute extends Model
 {
     use HasFactory;
-    protected $fillable = ['name','display_type'];
+    protected $fillable = ['name', 'display_type'];
 
     public function values()
     {
-        return $this->hasMany(ProductAttributeValue::class);
+        return $this->hasMany(ProductAttributeValue::class, 'product_attribute_id');
     }
 }

@@ -45,15 +45,16 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Tên sản phẩm<span
                                                             class="text-red">*</span></label>
-                                                    <input name="name" type="text" class="form-control"
-                                                        placeholder="Nhập tên sản phẩm" autocomplete="off">
+                                                    <input name="name" value="{{ old('name') }}" type="text"
+                                                        class="form-control" placeholder="Nhập tên sản phẩm"
+                                                        autocomplete="off">
                                                     @error('name')
                                                         <span class="text-danger">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                                 <div class="mb-3 form-check form-switch">
                                                     <input class="form-check-input" type="checkbox" id="is_variable"
-                                                        name="is_variable">
+                                                        name="is_variable" {{ old('is_variable') ? 'checked' : '' }}>
                                                     <label class="form-check-label" for="is_variable">Sản phẩm có biến
                                                         thể</label>
                                                 </div>
@@ -66,7 +67,9 @@
                                                     <select class="form-control" name="brand_id" id="">
                                                         <option value="">Chọn thương hiệu</option>
                                                         @foreach ($brands as $brand)
-                                                            <option value="{{ $brand->id }}">{{ $brand->name }}</option>
+                                                            <option value="{{ $brand->id }}"
+                                                                {{ old('brand_id') == $brand->id ? 'selected' : '' }}>
+                                                                {{ $brand->name }}</option>
                                                         @endforeach
                                                     </select>
                                                     @error('brand_id')
@@ -187,7 +190,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Mô tả chung<span
                                                             class="text-red">*</span></label>
-                                                    <textarea name="description" rows="4" class="form-control" placeholder="Điền mô tả chung sản phẩm"></textarea>
+                                                    <textarea name="description" rows="4" class="form-control" placeholder="Điền mô tả chung sản phẩm">{{ old('description') }}</textarea>
                                                     @error('description')
                                                         <span class="text-danger">{{ $message }}</span>
                                                     @enderror
@@ -198,7 +201,7 @@
                                                     <label class="form-label">Mô tả chi tiết<span
                                                             class="text-red">*</span></label>
                                                     <textarea id="my-editor" name="longdescription" rows="4" class="form-control"
-                                                        placeholder="Nhập mô tả chi tiết"></textarea>
+                                                        placeholder="Nhập mô tả chi tiết">{{ old('longdescription') }}</textarea>
                                                     @error('longdescription')
                                                         <span class="text-danger">{{ $message }}</span>
                                                     @enderror
