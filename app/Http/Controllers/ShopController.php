@@ -30,7 +30,7 @@ class ShopController extends Controller
    public function __construct(Product $product, Brand $brand, Banner $banner, ProductImage $productImage, Post $post)
    {
       $this->product = $product->where('uploaded', 1);
-      $this->all_products = $product->where('uploaded', 1)->paginate(9);
+      $this->all_products = $product->with('variants')->where('uploaded', 1)->paginate(9);
       $this->sale_products = $product->where('uploaded', 1)->where('sale_percent', '<>', 1)->paginate(15);
       $this->banner = $banner->where('uploaded', 1)->get();
       $this->productImage = $productImage->where('image_type', 0)->get();
@@ -48,6 +48,7 @@ class ShopController extends Controller
       $sale_products = $this->sale_products;
       $non_sale_products = $this->product->where('sale_percent', 1)->get();
       $products = $this->all_products;
+
       $posts = $this->post->paginate(3);
       return view('client.home', compact('brands', 'banners', 'sale_products', 'non_sale_products', 'images', 'products', 'posts'));
    }

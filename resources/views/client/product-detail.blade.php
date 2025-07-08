@@ -25,7 +25,8 @@
                     <div class="product__details__pic">
                         <div class="product__details__pic__item">
                             <img class="product__details__pic__item--large"
-                                src="{{ isset($image) ? asset($image->url) : asset('') }}" alt="">
+                                src="{{ isset($image) ? asset($image->url) : asset('https://placehold.co/400x400?text=No+Image') }}"
+                                alt="">
                         </div>
 
                         <div class="product__details__pic__slider owl-carousel">
@@ -61,7 +62,24 @@
                             }
                         </style>
                         @if ($product->has_variants && $product->variants->count())
-                            <div id="variant-price" class="mt-3 font-weight-bold text-success"></div>
+                            <div id="variant-price" class="product__details__price">
+                                @php
+                                    $minVariant = $product->variants->sortBy('price')->first();
+                                    $maxVariant = $product->variants->sortByDesc('price')->first();
+                                @endphp
+
+                                @if ($product->sale_percent != 1)
+                                    Giá:
+                                    {{ number_format($minVariant->price * $minVariant->sale_percent, 0, ',', '.') . 'đ' }}
+                                    -
+                                    {{ number_format($maxVariant->price * $maxVariant->sale_percent, 0, ',', '.') . 'đ' }}
+                                @else
+                                    Giá:
+                                    {{ number_format($minVariant->price, 0, ',', '.') . 'đ' }}
+                                    -
+                                    {{ number_format($maxVariant->price, 0, ',', '.') . 'đ' }}
+                                @endif
+                            </div>
                             <div id="variant-stock" class="text-muted"></div>
                             <div class="product__details__variants mb-3">
                                 <label><strong>Chọn biến thể:</strong></label>
