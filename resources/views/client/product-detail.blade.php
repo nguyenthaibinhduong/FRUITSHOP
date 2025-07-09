@@ -141,6 +141,7 @@
                         <form action="{{ route('cart.store') }}" method="POST">
                             @csrf
                             <input value="{{ $product->id }}" type="text" name="id" hidden>
+                            <input value="" type="text" name="variant" class="variant-id-form" hidden>
                             <div class="product__details__quantity">
                                 <div class="quantity">
                                     <div class="pro-qty">
@@ -213,11 +214,9 @@
 
                                 </div>
                                 <div class="input-group mb-3">
-                                    @if (Auth::check())
-                                        <input value="{{ auth::user()->id }}" type="text" name="user_id" hidden>
-                                    @else
-                                        <input value="" type="text" name="user_id" hidden>
-                                    @endif
+                                    <input value="{{ Auth::check() ? auth::user()->id : '' }}" type="text"
+                                        name="user_id" hidden>
+
                                     <input value="1" type="text" name="commentable_type" hidden>
                                     <input value="{{ $product->id }}" type="text" name="commentable_id" hidden>
                                     <input value="0" type="text" name="option" hidden>
@@ -241,6 +240,7 @@
     <script>
         const variants = @json($product->variants); // lấy toàn bộ danh sách biến thể
         const selections = {};
+        var variantSelector = {};
 
         document.querySelectorAll('.variant-option').forEach(el => {
             el.addEventListener('click', function() {
@@ -276,14 +276,19 @@
 
                         if (matchedCount === 2) {
                             matched = variant;
+                            variantSelector = variant;
+
                         }
                     });
 
                     // Nếu tìm được, hiển thị giá và stock
                     if (matched) {
+
                         document.getElementById('variant-price').innerText =
                             `Giá: ${Number(matched.price).toLocaleString()}đ`;
                         document.getElementById('variant-stock').innerText = `Tồn kho: ${matched.stock}`;
+                        document.querySelector('.variant-id-form').value = matched.id;
+
                     } else {
                         document.getElementById('variant-price').innerText =
                             'Không tìm thấy biến thể phù hợp';
