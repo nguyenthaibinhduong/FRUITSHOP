@@ -206,13 +206,13 @@ class ProductController extends Controller
     {
         $selected_categories = DB::table('product_categories')
             ->where('product_id', $id)
-            ->pluck('category_id')
-            ->toArray();
+            ->pluck('category_id')->toArray();
         $categories = Category::all();
         $brands = $this->brand->all();
         $option = $this->getCategories($parent_id = '');
         $images = ProductImage::where('product_id', $id)->get();
-        $product = Product::with('variants')->find($id);
+        $product = Product::with('variants.attributes.attribute', 'variants.attributes.value')->find($id);
+        //dd($product->toJson());
         $attributes = ProductAttribute::with('values')->get();
         // dd($attributes, $product);
         return view($this->view_path . 'edit', compact('product', 'images', 'selected_categories', 'categories', 'brands', 'attributes', 'option'));
@@ -223,82 +223,182 @@ class ProductController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        try {
+        // try {
 
 
-            $rules = [
-                'name' => 'required|string|max:255',
-                'price' => 'required|numeric|min:1000|max:10000000',
-                'sale_percent' => 'numeric|min:0|max:100',
-                'quantity' => 'required|integer|min:0',
-                'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-                'thump' => 'array',
-                'thump.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            ];
+        $rules = [
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:1000|max:10000000',
+            'sale_percent' => 'numeric|min:0|max:100',
+            'quantity' => 'required|integer|min:0',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'thump' => 'array',
+            'thump.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ];
 
-            // Custom error messages
-            $messages = [
-                'required' => 'Bắt buộc nhập',
-                'string' => 'Phải là kiểu kí tự',
-                'numeric' => 'Phải là kiểu số',
-                'integer' => 'Phải là số nguyên',
-                'min' => 'Giá trị quá nhỏ',
-                'max' => 'Giá trị vượt quá cho phép',
-                'image' => 'Phải là file ảnh',
-                'mimes' => 'Định dạng không hợp lệ',
-                'exists' => 'Giá trị không tồn tại',
-                'thump.array' => 'Phải là mảng',
-                'thump.*.image' => 'Từng mục phải là file ảnh',
-                'thump.*.mimes' => 'Từng mục phải có định dạng hợp lệ',
-                'thump.*.max' => 'Từng mục có kích thước vượt quá cho phép',
-            ];
-            // Validate the request
-            $validator = Validator::make($request->all(), $rules, $messages);
+        if ($request->has('is_variable') && $request->is_variable === 'on') {
+            unset($rules['price']);
+            unset($rules['quantity']);
+            unset($rules['sale_percent']);
+        }
 
-            // If validation fails, return back with errors
-            if ($validator->fails()) {
-                return back()->withErrors($validator)->withInput();
+        // Custom error messages
+        $messages = [
+            'required' => 'Bắt buộc nhập',
+            'string' => 'Phải là kiểu kí tự',
+            'numeric' => 'Phải là kiểu số',
+            'integer' => 'Phải là số nguyên',
+            'min' => 'Giá trị quá nhỏ',
+            'max' => 'Giá trị vượt quá cho phép',
+            'image' => 'Phải là file ảnh',
+            'mimes' => 'Định dạng không hợp lệ',
+            'exists' => 'Giá trị không tồn tại',
+            'thump.array' => 'Phải là mảng',
+            'thump.*.image' => 'Từng mục phải là file ảnh',
+            'thump.*.mimes' => 'Từng mục phải có định dạng hợp lệ',
+            'thump.*.max' => 'Từng mục có kích thước vượt quá cho phép',
+        ];
+        // Validate the request
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        // If validation fails, return back with errors
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+        $product = Product::find($id);
+
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path($this->upload_path), $imageName);
+            $url = $this->upload_path . '/' . $imageName;
+            ProductImage::where('product_id', $id)
+                ->where('image_type', 0)
+                ->update([
+                    'url' => $url
+                ]);
+        }
+        if ($request->type_update != null) {
+            if ($request->hasFile('thump')) {
+                $this->updateThump($request->type_update, $request->file('thump'), $id);
+            } else {
+                $this->updateThump($request->type_update, null, $id);
             }
-            $product = Product::find($id);
+        }
 
-            if ($request->hasFile('image')) {
-                $imageName = time() . '.' . $request->image->extension();
-                $request->image->move(public_path($this->upload_path), $imageName);
-                $url = $this->upload_path . '/' . $imageName;
-                ProductImage::where('product_id', $id)
-                    ->where('image_type', 0)
-                    ->update([
-                        'url' => $url
+        DB::table('product_categories')->where('product_id', $id)->delete();
+        foreach ($request->category_id ?? [] as $category_id) {
+            $product->categories()->attach($category_id);
+        }
+        $product->update([
+            'name' => $request->name,
+            'price' => $request->price ?? 0,
+            'description' => $request->description ?? ' ',
+            'longdescription' => $request->longdescription ?? ' ',
+            'sale_percent' => $request->sale_percent ?? 0,
+            'quantity' => $request->quantity ?? 0,
+            'brand_id' => $request->brand_id,
+            'has_variants' => $request->has('is_variable') && $request->is_variable === 'on' ? 1 : 0,
+            'uploaded' => $request->uploaded,
+        ]);
+
+        if ($request->has('variants')) {
+            $productVariantIds = [];
+
+            $productVariantIds = [];
+
+            foreach ($request->variants ?? [] as $variantData) {
+                $attributes = json_decode($variantData['attributes'], true) ?? [];
+
+                // Chuẩn hóa thuộc tính từ request
+                $attributes = array_map(function ($a) {
+                    return [
+                        'attribute_id' => (int) $a['attribute_id'],
+                        'value_id' => (int) $a['value_id'],
+                    ];
+                }, $attributes);
+
+                // Sort để chuẩn hóa thứ tự
+                usort($attributes, fn($a, $b) => $a['attribute_id'] <=> $b['attribute_id']);
+
+                $existingVariant = null;
+
+                foreach ($product->variants as $v) {
+                    $vAttrs = $v->attributes->map(function ($a) {
+                        return [
+                            'attribute_id' => (int) $a->attribute_id,
+                            'value_id' => (int) $a->value_id,
+                        ];
+                    })->toArray();
+
+                    usort($vAttrs, fn($a, $b) => $a['attribute_id'] <=> $b['attribute_id']);
+
+                    if ($attributes == $vAttrs) {
+                        $existingVariant = $v;
+                        break;
+                    }
+                }
+
+                if ($existingVariant) {
+                    // Cập nhật variant cũ
+                    $existingVariant->update([
+                        'sku' => $variantData['sku'] ?? null,
+                        'price' => $variantData['price'] ?? 0,
+                        'sale_percent' => $variantData['sale_percent'] ?? 0,
+                        'stock' => $variantData['stock'] ?? 0,
+                        'uploaded' => $variantData['uploaded'] ?? 0,
                     ]);
-            }
-            if ($request->type_update != null) {
-                if ($request->hasFile('thump')) {
-                    $this->updateThump($request->type_update, $request->file('thump'), $id);
+
+                    if (isset($variantData['image']) && $variantData['image']) {
+                        $img = $variantData['image'];
+                        $imageName = time() . '_' . rand(1000, 9999) . '.' . $img->extension();
+                        $img->move(public_path($this->upload_path), $imageName);
+                        $existingVariant->update(['image' => $imageName]);
+                    }
+
+                    $productVariantIds[] = $existingVariant->id;
                 } else {
-                    $this->updateThump($request->type_update, null, $id);
+                    // Thêm mới variant
+                    $newVariant = $product->variants()->create([
+                        'sku' => $variantData['sku'] ?? null,
+                        'price' => $variantData['price'] ?? 0,
+                        'sale_percent' => $variantData['sale_percent'] ?? 0,
+                        'stock' => $variantData['stock'] ?? 0,
+                        'uploaded' => $variantData['uploaded'] ?? 0,
+                    ]);
+
+                    if (isset($variantData['image']) && $variantData['image']) {
+                        $img = $variantData['image'];
+                        $imageName = time() . '_' . rand(1000, 9999) . '.' . $img->extension();
+                        $img->move(public_path($this->upload_path), $imageName);
+                        $newVariant->update(['image' => $imageName]);
+                    }
+
+                    foreach ($attributes as $attr) {
+                        $newVariant->attributes()->create([
+                            'attribute_id' => $attr['attribute_id'],
+                            'value_id' => $attr['value_id'],
+                        ]);
+                    }
+
+                    $productVariantIds[] = $newVariant->id;
                 }
             }
-            DB::table('product_categories')->where('product_id', $id)->delete();
-            foreach ($request->category_id as $category_id) {
-                $product->categories()->attach($category_id);
-            }
-            $product->update([
-                'name' => $request->name,
-                'price' => $request->price,
-                'description' => $request->description,
-                'longdescription' => $request->longdescription,
-                'sale_percent' => $request->sale_percent,
-                'quantity' => $request->quantity,
-                'brand_id' => $request->brand_id,
-                'uploaded' => $request->uploaded,
-            ]);
+
+            // Nếu muốn xóa những variant cũ không còn nằm trong danh sách:
+            $product->variants()->whereNotIn('id', $productVariantIds)->delete();
 
 
-            return redirect()->route($this->route_path)->with('success', 'Cập nhật thành công');
-        } catch (\Exception $e) {
-            // Handle other exceptions
-            return back()->with('danger', 'Đã xảy ra lỗi. Vui lòng thử lại.');
+            // XÓA các variant không có trong danh sách nữa
+            $product->variants()->whereNotIn('id', $productVariantIds)->delete();
         }
+
+
+
+        return redirect()->route($this->route_path)->with('success', 'Cập nhật thành công');
+        // } catch (\Exception $e) {
+        //     dd($e->getMessage());
+        //     return back()->with('danger', 'Đã xảy ra lỗi. Vui lòng thử lại.');
+        // }
     }
 
     /**

@@ -75,67 +75,167 @@
                                                     @enderror
                                                 </div>
                                             </div>
+                                            @php
+
+                                            @endphp
                                             <div class="col-sm-12 col-12">
                                                 <div class="mb-0">
                                                     <label class="form-label">Danh mục<span
                                                             class="text-red">*</span></label>
-                                                    <select class="form-control" name="category_id[]" multiple>
-                                                        {!! $option !!}
+                                                    <select class="form-control" name="category_id[]" id=""
+                                                        multiple>
+                                                        @foreach ($categories as $category)
+                                                            <option value="{{ $category->id }}"
+                                                                {{ in_array($category->id, $selected_categories) ? 'selected' : '' }}>
+                                                                {{ $category->name }}</option>
+                                                        @endforeach
+
                                                     </select>
                                                     @error('category_id')
                                                         <span class="text-danger">{{ $message }}</span>
                                                     @enderror
                                                 </div>
                                             </div>
-                                            <div class="row" id="simple-product-fields">
-                                                <div class="col-sm-6 col-12">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Giá sản phẩm<span
-                                                                class="text-red">*</span></label>
-                                                        <div class="input-group">
-                                                            <input
-                                                                value="{{ !$product->has_variants ? $product->price ?? '' : '' }}"
-                                                                name="price" type="text" class="form-control"
-                                                                placeholder="Nhập giá sản phẩm" autocomplete="off">
-                                                            <span class="input-group-text">đ</span>
+                                            @if ($product->has_variants != 1)
+                                                <div class="row" id="simple-product-fields">
+                                                    <div class="col-sm-6 col-12">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Giá sản phẩm<span
+                                                                    class="text-red">*</span></label>
+                                                            <div class="input-group">
+                                                                <input
+                                                                    value="{{ !$product->has_variants ? $product->price ?? '' : '' }}"
+                                                                    name="price" type="text" class="form-control"
+                                                                    placeholder="Nhập giá sản phẩm" autocomplete="off">
+                                                                <span class="input-group-text">đ</span>
+                                                            </div>
+                                                            @error('price')
+                                                                <span class="text-danger">{{ $message }}</span>
+                                                            @enderror
                                                         </div>
-                                                        @error('price')
-                                                            <span class="text-danger">{{ $message }}</span>
-                                                        @enderror
                                                     </div>
-                                                </div>
-                                                <div class="col-sm-6 col-12">
-                                                    <div class=" mb-3">
-                                                        <label class="form-label">Mức giảm giá</label>
-                                                        <div class="input-group">
-                                                            <input
-                                                                value="{{ !$product->has_variants ? $product->sale_percent ?? 0 : '' }}"
-                                                                type="text" name="sale_percent" class="form-control"
-                                                                placeholder="Nhập % giảm giá" autocomplete="off">
-                                                            <span class="input-group-text">%</span>
+                                                    <div class="col-sm-6 col-12">
+                                                        <div class=" mb-3">
+                                                            <label class="form-label">Mức giảm giá</label>
+                                                            <div class="input-group">
+                                                                <input
+                                                                    value="{{ !$product->has_variants ? $product->sale_percent ?? 0 : '' }}"
+                                                                    type="text" name="sale_percent" class="form-control"
+                                                                    placeholder="Nhập % giảm giá" autocomplete="off">
+                                                                <span class="input-group-text">%</span>
+                                                            </div>
+                                                            @error('sale_percent')
+                                                                <span class="text-danger">{{ $message }}</span>
+                                                            @enderror
                                                         </div>
-                                                        @error('sale_percent')
-                                                            <span class="text-danger">{{ $message }}</span>
-                                                        @enderror
+                                                    </div>
+                                                    <div class="col-sm-12 col-12">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Số lượng tồn kho<span
+                                                                    class="text-red">*</span></label>
+                                                            <input
+                                                                value="{{ !$product->has_variants ? $product->quantity ?? 0 : '' }}"
+                                                                name="quantity" type="text" class="form-control"
+                                                                placeholder="Nhập số lượng tồn kho" autocomplete="off">
+                                                            @error('quantity')
+                                                                <span class="text-danger">{{ $message }}</span>
+                                                            @enderror
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-12 col-12">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Số lượng tồn kho<span
-                                                                class="text-red">*</span></label>
-                                                        <input
-                                                            value="{{ !$product->has_variants ? $product->quantity ?? 0 : '' }}"
-                                                            name="quantity" type="text" class="form-control"
-                                                            placeholder="Nhập số lượng tồn kho" autocomplete="off">
-                                                        @error('quantity')
-                                                            <span class="text-danger">{{ $message }}</span>
-                                                        @enderror
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @endif
                                         </div>
+                                        <div id="variant-section">
+                                            <div class="mb-3">
+                                                <label class="form-label">Chọn thuộc tính</label>
+                                                <select id="attribute-selector" class="form-select" multiple>
+                                                    @foreach ($attributes as $attribute)
+                                                        <option value="{{ $attribute->id }}">{{ $attribute->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
+                                            <div id="attribute-values-container" class="mb-3"></div>
+
+                                            <button type="button" class="btn btn-outline-primary" id="generate-variant">
+                                                <i class="bi bi-plus-circle"></i> Thêm biến thể
+                                            </button>
+                                        </div>
+
+                                        <hr>
+
+                                        <div id="variant-combinations">
+                                            {{-- Load biến thể từ $product->variants --}}
+                                            @foreach ($product->variants as $index => $variant)
+                                                @php
+                                                    $comboInput = json_encode($variant['attributes']);
+                                                    $display = collect($variant['attributes'])
+                                                        ->map(function ($attr) {
+                                                            return $attr['attribute']['name'] .
+                                                                ': ' .
+                                                                $attr['value']['label'];
+                                                        })
+                                                        ->implode(' | ');
+                                                @endphp
+                                                <div class="card p-2 mb-2 variant-item">
+                                                    <input type="hidden"
+                                                        name="variants[{{ $index }}][attributes]"
+                                                        value='{{ $comboInput }}'>
+                                                    <strong>Biến thể {{ $index + 1 }}: {{ $display }}</strong>
+                                                    <div class="row mt-2">
+                                                        <div class="col">
+                                                            <input type="text"
+                                                                name="variants[{{ $index }}][sku]"
+                                                                value="{{ $variant['sku'] }}" class="form-control"
+                                                                placeholder="SKU">
+                                                        </div>
+                                                        <div class="col">
+                                                            <input type="number"
+                                                                name="variants[{{ $index }}][price]"
+                                                                value="{{ $variant['price'] }}" class="form-control"
+                                                                placeholder="Giá">
+                                                        </div>
+                                                        <div class="col">
+                                                            <input type="number"
+                                                                name="variants[{{ $index }}][sale_percent]"
+                                                                value="{{ $variant['sale_percent'] }}"
+                                                                class="form-control" placeholder="% giảm">
+                                                        </div>
+                                                        <div class="col">
+                                                            <input type="number"
+                                                                name="variants[{{ $index }}][stock]"
+                                                                value="{{ $variant['stock'] }}" class="form-control"
+                                                                placeholder="Tồn kho">
+                                                        </div>
+                                                        <div class="col">
+                                                            <input type="file"
+                                                                name="variants[{{ $index }}][image]"
+                                                                class="form-control">
+                                                        </div>
+                                                        <div class="col">
+                                                            <select name="variants[{{ $index }}][uploaded]"
+                                                                class="form-select">
+                                                                <option value="1"
+                                                                    {{ $variant['uploaded'] ? 'selected' : '' }}>Đăng
+                                                                </option>
+                                                                <option value="0"
+                                                                    {{ !$variant['uploaded'] ? 'selected' : '' }}>Không
+                                                                    đăng</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-auto">
+                                                            <button type="button"
+                                                                class="btn btn-danger remove-variant">Xóa</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+
                                     </div>
                                 </div>
+
                                 <div class="col-sm-12 col-12">
                                     <div class="card-border">
                                         <div class="card-border-title">Đặc tính</div>
@@ -159,6 +259,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+
                                             <div class="col-sm-12 col-12">
                                                 <div class="mb-3">
                                                     <label class="form-label">Mô tả chung<span
@@ -214,120 +315,99 @@
         </div>
     </form>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const toggle = document.getElementById('is_variable');
-            const simpleFields = document.getElementById('simple-product-fields');
-            const variantSection = document.getElementById('variant-section');
-            const isChecked = toggle.checked;
-            simpleFields.classList.toggle('d-none', isChecked);
-            variantSection.classList.toggle('d-none', !isChecked);
-            toggle.addEventListener('change', () => {
-                const isChecked = toggle.checked;
-                simpleFields.classList.toggle('d-none', isChecked);
-                variantSection.classList.toggle('d-none', !isChecked);
+        document.addEventListener('DOMContentLoaded', function() {
+            const attrSelector = document.getElementById('attribute-selector');
+            const valuesContainer = document.getElementById('attribute-values-container');
+            const variantBox = document.getElementById('variant-combinations');
+            const addBtn = document.getElementById('generate-variant');
+
+            let variantIndex = {{ count($product->variants) }};
+
+            attrSelector.addEventListener('change', function() {
+                const selected = Array.from(this.selectedOptions).map(opt => ({
+                    id: opt.value,
+                    name: opt.text
+                }));
+
+                valuesContainer.innerHTML = '';
+
+                selected.forEach(attr => {
+                    fetch(`/api/attribute/${attr.id}/values`)
+                        .then(res => res.json())
+                        .then(data => {
+                            const block = document.createElement('div');
+                            block.classList.add('mb-2');
+                            block.innerHTML = `
+                                <label class="form-label">Giá trị cho: <strong>${attr.name}</strong></label>
+                                <select name="attribute_values[${attr.id}][]" class="form-select" multiple>
+                                    ${data.map(val => `<option value="${val.id}">${val.label ?? val.value}</option>`).join('')}
+                                </select>
+                            `;
+                            valuesContainer.appendChild(block);
+                        });
+                });
             });
 
-            generateBtn.addEventListener('click', () => {
-                const variantBox = document.getElementById('variant-combinations');
-                variantBox.innerHTML = '';
-
-                // Tìm tất cả các select giá trị
-                const selects = document.querySelectorAll('#attribute-values-container select');
-
-                let valueGroups = [];
+            addBtn.addEventListener('click', function() {
+                const selects = valuesContainer.querySelectorAll('select');
+                let attributes = [];
 
                 selects.forEach(select => {
-                    const attrId = select.name.match(/\d+/)[0]; // Lấy id thuộc tính
-                    const attrLabel = select.previousElementSibling.textContent.trim().replace(
-                        "Giá trị cho:", "").trim();
-
-                    const selected = Array.from(select.selectedOptions).map(option => ({
-                        attr_id: attrId,
-                        attr_name: attrLabel,
-                        value_id: option.value,
-                        value_label: option.text
-                    }));
-
-                    if (selected.length) valueGroups.push(selected);
+                    const attrId = select.name.match(/\d+/)[0];
+                    const attrName = select.previousElementSibling.textContent.trim().replace(
+                        'Giá trị cho:', '').trim();
+                    Array.from(select.selectedOptions).forEach(opt => {
+                        attributes.push({
+                            attribute_id: attrId,
+                            attribute: {
+                                name: attrName
+                            },
+                            value_id: opt.value,
+                            value: {
+                                label: opt.text
+                            }
+                        });
+                    });
                 });
 
-                if (valueGroups.length < 1) {
-                    alert("Vui lòng chọn giá trị thuộc tính.");
+                if (attributes.length === 0) {
+                    alert("Chưa chọn giá trị thuộc tính nào.");
                     return;
                 }
 
-                // Hàm tạo tổ hợp cartesian product
-                function cartesian(arr) {
-                    return arr.reduce((a, b) => a.flatMap(d => b.map(e => [].concat(d, e))));
-                }
+                const display = attributes.map(a => `${a.attribute.name}: ${a.value.label}`).join(' | ');
+                const comboInput = JSON.stringify(attributes);
 
-                const combinations = cartesian(valueGroups);
-
-                combinations.forEach((combo, index) => {
-                    const display = combo.map(v => `${v.attr_name}: ${v.value_label}`).join(' | ');
-                    const comboInput = JSON.stringify(combo);
-
-                    variantBox.innerHTML += `
-            <div class="card p-2 mb-2">
-                <strong>Biến thể ${index + 1}: ${display}</strong>
-                <input type="hidden" name="variants[${index}][attributes]" value='${comboInput}'>
-                <div class="row mt-2">
-                    <div class="col">
-                        <input type="text" name="variants[${index}][sku]" class="form-control" placeholder="SKU">
+                const html = `
+                    <div class="card p-2 mb-2 variant-item">
+                        <input type="hidden" name="variants[${variantIndex}][attributes]" value='${comboInput}'>
+                        <strong>Biến thể ${variantIndex + 1}: ${display}</strong>
+                        <div class="row mt-2">
+                            <div class="col"><input type="text" name="variants[${variantIndex}][sku]" class="form-control" placeholder="SKU"></div>
+                            <div class="col"><input type="number" name="variants[${variantIndex}][price]" class="form-control" placeholder="Giá"></div>
+                            <div class="col"><input type="number" name="variants[${variantIndex}][sale_percent]" class="form-control" placeholder="% giảm"></div>
+                            <div class="col"><input type="number" name="variants[${variantIndex}][stock]" class="form-control" placeholder="Tồn kho"></div>
+                            <div class="col"><input type="file" name="variants[${variantIndex}][image]" class="form-control"></div>
+                            <div class="col">
+                                <select name="variants[${variantIndex}][uploaded]" class="form-select">
+                                    <option value="1">Đăng</option>
+                                    <option value="0">Không đăng</option>
+                                </select>
+                            </div>
+                            <div class="col-auto">
+                                <button type="button" class="btn btn-danger remove-variant">Xóa</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col">
-                        <input type="number" name="variants[${index}][price]" class="form-control" placeholder="Giá" required>
-                    </div>
-                    <div class="col">
-                        <input type="number" name="variants[${index}][sale_percent]" class="form-control" placeholder="% Giảm">
-                    </div>
-                    <div class="col">
-                        <input type="number" name="variants[${index}][stock]" class="form-control" placeholder="Tồn kho" required>
-                    </div>
-                    <div class="col">
-                        <input type="file" name="variants[${index}][image]" class="form-control">
-                    </div>
-                    <div class="col">
-                        <select name="variants[${index}][uploaded]" class="form-select">
-                            <option value="1">Đăng</option>
-                            <option value="0">Không đăng</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        `;
-                });
+                `;
+                variantBox.insertAdjacentHTML('beforeend', html);
+                variantIndex++;
             });
 
-        });
-        const attrSelector = document.getElementById('attribute-selector');
-        const valuesContainer = document.getElementById('attribute-values-container');
-
-        attrSelector.addEventListener('change', function() {
-            const selectedAttributes = Array.from(this.selectedOptions).map(opt => ({
-                id: opt.value,
-                name: opt.text
-            }));
-
-            valuesContainer.innerHTML = ''; // Clear cũ nếu cần (hoặc kiểm tra trùng)
-
-            selectedAttributes.forEach(attr => {
-                fetch(`/api/attribute/${attr.id}/values`)
-                    .then(res => res.json())
-                    .then(data => {
-                        const block = document.createElement('div');
-                        block.classList.add('mb-2');
-
-                        block.innerHTML = `
-                            <label class="form-label">Giá trị cho: <strong>${attr.name}</strong></label>
-                            <select name="attribute_values[${attr.id}][]" class="form-select" multiple>
-                                ${data.map(item =>
-                                    `<option value="${item.id}">${item.label ?? item.value}</option>`).join('')}
-                            </select>
-                        `;
-
-                        valuesContainer.appendChild(block);
-                    });
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-variant')) {
+                    e.target.closest('.variant-item').remove();
+                }
             });
         });
     </script>
