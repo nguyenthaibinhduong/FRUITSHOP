@@ -159,6 +159,20 @@
                            </ul>
                        </div>
                    </li>
+                   <li class="sidebar-dropdown">
+                       <a href="#">
+                           <i class="bi bi-images"></i>
+                           <span class="menu-text">Đa phương tiện</span>
+                       </a>
+                       <div class="sidebar-submenu">
+                           <ul>
+                               <li>
+                                   <a href="{{ route('media') }}">Folder</a>
+                               </li>
+
+                           </ul>
+                       </div>
+                   </li>
                </ul>
            </div>
        </div>

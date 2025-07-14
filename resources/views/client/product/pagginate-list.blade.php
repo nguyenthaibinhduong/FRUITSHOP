@@ -30,10 +30,11 @@
                             @endif
                             <li><a href="{{ route('getdetail', ['id' => $product->id]) }}"><i class="icon_ul"></i></a>
                             </li>
-
-                            <li><button type="button" data-id="{{ $product->id }}"
-                                    class="add-to-cart add-pro-{{ $product->id }}"><i
-                                        class="fa fa-shopping-cart"></i></button></li>
+                            @if ($product->has_variants == 0)
+                                <li><button type="button" data-id="{{ $product->id }}"
+                                        class="add-to-cart add-pro-{{ $product->id }}"><i
+                                            class="fa fa-shopping-cart"></i></button></li>
+                            @endif
                         </form>
                     </ul>
                 </div>

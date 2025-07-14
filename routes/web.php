@@ -5,6 +5,7 @@ use App\Http\Controllers\BannerController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CloudinaryController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\CustomerController;
@@ -226,6 +227,12 @@ Route::prefix($admin_prefix)->middleware('authAdmin')->group(function () use ($a
         Route::get('/restore/{id}', [$controller, 'restore'])->middleware('checkpermission:delete-' . $prefix)->name($prefix . '.restore');
         Route::get('/destroy/{id}', [$controller, 'destroy'])->middleware('checkpermission:delete-' . $prefix)->name($prefix . '.destroy');
     });
+    //===========================MAIL=====================
+    $prefix = 'media';
+    $controller = CloudinaryController::class;
+    Route::prefix($prefix)->group(function () use ($controller, $prefix) {
+        Route::get('/{path?}', [$controller, 'listAssets'])->where('path', '.*')->name('media');
+    });
 });
 
 Route::group(['prefix' => 'laravel-filemanager'], function () {
@@ -263,6 +270,8 @@ Route::prefix('api')->group(function () {
     Route::get('/attribute/{id}/values', [ProductAttributeController::class, 'getValues']);
     Route::post('/attribute/{id}/value', [ProductAttributeController::class, 'addValue'])->name('api.attribute.value.add');
     Route::delete('/attribute/value/{value_id}', [ProductAttributeController::class, 'deleteValue'])->name('api.attribute.value.delete');
+    //===========================MEDIA=====================
+    Route::get('/media-api/{path?}', [CloudinaryController::class, 'getAssets'])->where('path', '.*')->name('api.media');
 });
 //===========Payment============//
 Route::prefix('payment')->group(function () {
