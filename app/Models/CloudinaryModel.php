@@ -71,4 +71,21 @@ class CloudinaryModel
     {
         return $this->cloudinary->adminApi()->subFolders($parent)['folders'] ?? [];
     }
+    function getPublicIdFromUrl($url, $folder)
+    {
+        // Bước 1: parse URL để lấy path
+        $parsedUrl = parse_url($url, PHP_URL_PATH);
+
+        // Bước 2: Tìm vị trí thư mục trong đường dẫn
+        $pos = strpos($parsedUrl, $folder);
+        if ($pos === false) {
+            return null; // Không tìm thấy folder trong URL
+        }
+
+        // Bước 3: Cắt từ vị trí thư mục đến hết và loại bỏ phần mở rộng
+        $path = substr($parsedUrl, $pos); // ví dụ: fruit_shop/product/image123.jpg
+        $pathWithoutExt = preg_replace('/\.[^.]+$/', '', $path); // loại bỏ .jpg, .png
+
+        return $pathWithoutExt; // Trả về public_id
+    }
 }
