@@ -16,8 +16,8 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-         // Insert categories
-         DB::table('categories')->insert([
+        // Insert categories
+        DB::table('categories')->insert([
             ['id' => 1, 'name' => 'Rau củ'],
             ['id' => 2, 'name' => 'Trái cây'],
             ['id' => 3, 'name' => 'Thức ăn nhanh'],
@@ -38,6 +38,7 @@ class ProductSeeder extends Seeder
             ['id' => 4, 'name' => 'Meatdeli'],
         ]);
 
+
         $productImage_link = 'img/product/';
         $arr_image = [];
         for ($i = 1; $i <= 12; $i++) {
@@ -47,16 +48,16 @@ class ProductSeeder extends Seeder
         for ($i = 1; $i <= 100; $i++) {
             $category = Category::find(mt_rand(1, 10));
             $brand = Brand::find(mt_rand(1, 4));
-            
+
             // Insert product
             DB::table('products')->insert([
                 'id' => $i,
                 'name' => $category->name . ' ' . $brand->name . ' ' . mt_rand(100, 999),
-                'description' => 'Sản phẩm '.$category->name . ' ' . $brand->name . ' ' . mt_rand(100, 999) .' chất lượng cao 100%',
+                'description' => 'Sản phẩm ' . $category->name . ' ' . $brand->name . ' ' . mt_rand(100, 999) . ' chất lượng cao 100%',
                 'longdescription' => 'This is a long description of product ',
-                'price' => (mt_rand(100, 999))*1000,
-                'sale_percent' => Arr::random([0.8,0.9,0.7,1]),
-                'quantity' => Arr::random([0,10,20,30,100,50,60]),
+                'price' => (mt_rand(100, 999)) * 1000,
+                'sale_percent' => Arr::random([0.8, 0.9, 0.7, 1]),
+                'quantity' => Arr::random([0, 10, 20, 30, 100, 50, 60]),
                 'uploaded' => 1,
                 'brand_id' => $brand->id
             ]);

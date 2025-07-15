@@ -23,10 +23,10 @@ class CloudinaryController extends Controller
 
         $result = $this->cloudinary->upload($request->file('image'), $request->folder);
 
-        return response()->json([
-            'public_id' => $result->getPublicId(),
-            'url' => $result->getSecurePath()
-        ]);
+        return [
+            'public_id' => $result['public_id'],
+            'url' => $result['secure_url']
+        ];
     }
 
     public function listAssets(Request $request)

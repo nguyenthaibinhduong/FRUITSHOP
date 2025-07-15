@@ -23,10 +23,18 @@ class CloudinaryModel
         ]);
     }
 
-    public function upload($file, $folder = 'default')
+    public function upload($file, $folder = '')
     {
-        return Cloudinary::upload($file->getRealPath(), ['folder' => $folder]);
+        try {
+            return $this->cloudinary->uploadApi()->upload($file->getRealPath(), [
+                'folder' => $folder ?: env('CLOUDINARY_FOLDER'),
+            ]);
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
     }
+
+
 
     public function listAssets($folder)
     {

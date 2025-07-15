@@ -31,8 +31,9 @@ class Product extends Model
     }
     public function image()
     {
-        return $this->belongsToMany(ProductImage::class);
+        return $this->hasMany(ProductImage::class);
     }
+
     public function comments()
     {
         return $this->morphMany(Comment::class, 'commentable');

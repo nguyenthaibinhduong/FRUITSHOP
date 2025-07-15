@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Components\Recusive;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\CloudinaryModel;
 use App\Models\Comment;
 use App\Models\Product;
 use App\Models\ProductAttribute;
@@ -20,9 +21,10 @@ class ProductController extends Controller
 {
     protected $view_path = 'admin.product.';
     protected $route_path = 'product';
-    protected $upload_path = 'img/product';
+    protected $upload_path = '/product';
     protected $category;
     protected $brand;
+    protected $cloudinary;
     /**
      * Display a listing of the resource.
      */
@@ -30,6 +32,7 @@ class ProductController extends Controller
     {
         $this->category = $category;
         $this->brand = $brand;
+        $this->cloudinary = new CloudinaryModel();
     }
     public function getCategories($parent_id)
     {
@@ -139,24 +142,28 @@ class ProductController extends Controller
         }
 
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path($this->upload_path), $imageName);
-            $url = $this->upload_path . '/' . $imageName;
-            $productimage = new ProductImage();
-            $productimage->url =  $url;
-            $productimage->product_id =  $product->id;
-            $productimage->save();
+            $res = $this->cloudinary->upload($request->file('image'), env('CLOUDINARY_FOLDER') . $this->upload_path);
+            $url = $res['secure_url'];
+            $public_id  = $res['public_id'];
+
+            ProductImage::create([
+                'url' => $url,
+                'product_id' => $product->id,
+                'public_id' => $public_id
+            ]);
         }
-        if ($request->type_update != null) {
+        if ($request->hasFile('thump')) {
             $stt = 1;
             foreach ($request->file('thump') as $image) {
-                $imageName = time() . '_thump_' . $stt . '.' . $image->extension();
-                $image->move(public_path($this->upload_path), $imageName);
-                $url = $this->upload_path . '/' . $imageName;
+
+                $res = $this->cloudinary->upload($image, env('CLOUDINARY_FOLDER') . $this->upload_path);
+                $url = $res['secure_url'];
+                $public_id  = $res['public_id'];
                 $productimage = new ProductImage();
                 $productimage->url =  $url;
                 $productimage->product_id =  $product->id;
                 $productimage->image_type =  1;
+                $productimage->public_id = $public_id;
                 $productimage->save();
                 $stt++;
             }
@@ -175,6 +182,7 @@ class ProductController extends Controller
 
                 // Lưu các giá trị thuộc tính cho biến thể
                 $attributes = json_decode($variant['attributes'], true);
+
                 foreach ($attributes as $attr) {
                     ProductVariantAttribute::create([
                         'variant_id' => $variantModel->id,
@@ -211,7 +219,8 @@ class ProductController extends Controller
         $brands = $this->brand->all();
         $option = $this->getCategories($parent_id = '');
         $images = ProductImage::where('product_id', $id)->get();
-        $product = Product::with('variants.attributes.attribute', 'variants.attributes.value')->find($id);
+        $product = Product::with('variants.attributes.attribute', 'variants.attributes.value', 'image')->find($id);
+
         //dd($product->toJson());
         $attributes = ProductAttribute::with('values')->get();
         // dd($attributes, $product);
@@ -268,21 +277,20 @@ class ProductController extends Controller
         $product = Product::find($id);
 
         if ($request->hasFile('image')) {
-            $imageName = time() . '.' . $request->image->extension();
-            $request->image->move(public_path($this->upload_path), $imageName);
-            $url = $this->upload_path . '/' . $imageName;
+            $res = $this->cloudinary->upload($request->file('image'), env('CLOUDINARY_FOLDER') . $this->upload_path);
+
+            $url = $res['secure_url'];
+            $public_id  = $res['public_id'];
+
             ProductImage::where('product_id', $id)
                 ->where('image_type', 0)
                 ->update([
-                    'url' => $url
+                    'url' => $url,
+                    'public_id' => $public_id,
                 ]);
         }
-        if ($request->type_update != null) {
-            if ($request->hasFile('thump')) {
-                $this->updateThump($request->type_update, $request->file('thump'), $id);
-            } else {
-                $this->updateThump($request->type_update, null, $id);
-            }
+        if ($request->hasFile('thump')) {
+            $this->updateThump('add', $request->file('thump'), $id);
         }
 
         DB::table('product_categories')->where('product_id', $id)->delete();
@@ -348,12 +356,12 @@ class ProductController extends Controller
                         'uploaded' => $variantData['uploaded'] ?? 0,
                     ]);
 
-                    if (isset($variantData['image']) && $variantData['image']) {
-                        $img = $variantData['image'];
-                        $imageName = time() . '_' . rand(1000, 9999) . '.' . $img->extension();
-                        $img->move(public_path($this->upload_path), $imageName);
-                        $existingVariant->update(['image' => $imageName]);
-                    }
+                    // if (isset($variantData['image']) && $variantData['image']) {
+                    //     $img = $variantData['image'];
+                    //     $imageName = time() . '_' . rand(1000, 9999) . '.' . $img->extension();
+                    //     $img->move(public_path($this->upload_path), $imageName);
+                    //     $existingVariant->update(['image' => $imageName]);
+                    // }
 
                     $productVariantIds[] = $existingVariant->id;
                 } else {
@@ -366,12 +374,12 @@ class ProductController extends Controller
                         'uploaded' => $variantData['uploaded'] ?? 0,
                     ]);
 
-                    if (isset($variantData['image']) && $variantData['image']) {
-                        $img = $variantData['image'];
-                        $imageName = time() . '_' . rand(1000, 9999) . '.' . $img->extension();
-                        $img->move(public_path($this->upload_path), $imageName);
-                        $newVariant->update(['image' => $imageName]);
-                    }
+                    // if (isset($variantData['image']) && $variantData['image']) {
+                    //     $img = $variantData['image'];
+                    //     $imageName = time() . '_' . rand(1000, 9999) . '.' . $img->extension();
+                    //     $img->move(public_path($this->upload_path), $imageName);
+                    //     $newVariant->update(['image' => $imageName]);
+                    // }
 
                     foreach ($attributes as $attr) {
                         $newVariant->attributes()->create([
@@ -426,13 +434,15 @@ class ProductController extends Controller
             case 'add':
                 $stt = 1;
                 foreach ($thump as $image) {
-                    $imageName = time() . '_thump_' . $stt . '.' . $image->extension();
-                    $image->move(public_path($this->upload_path), $imageName);
-                    $url = $this->upload_path . '/' . $imageName;
+                    $res = $this->cloudinary->upload($image, env('CLOUDINARY_FOLDER') . $this->upload_path);
+
+                    $url = $res['secure_url'];
+                    $public_id  = $res['public_id'];
                     $productimage = new ProductImage();
                     $productimage->url =  $url;
                     $productimage->product_id =  $id;
                     $productimage->image_type =  1;
+                    $productimage->public_id =  $public_id;
                     $productimage->save();
                     $stt++;
                 }
@@ -442,7 +452,7 @@ class ProductController extends Controller
                     ->where('image_type', 1)
                     ->get();
                 foreach ($image as $img) {
-                    unlink($img->url);
+                    $this->cloudinary->deleteImage($img->public_id);
                     $img->delete();
                 }
                 break;
@@ -451,25 +461,27 @@ class ProductController extends Controller
                     ->where('image_type', 1)
                     ->get();
                 foreach ($image as $img) {
-                    unlink($img->url);
+                    $this->cloudinary->deleteImage($img->public_id);
                     $img->delete();
                 }
                 $stt = 1;
                 foreach ($thump as $image) {
-                    $imageName = time() . '_thump_' . $stt . '.' . $image->extension();
-                    $image->move(public_path($this->upload_path), $imageName);
-                    $url = $this->upload_path . '/' . $imageName;
+                    $res = $this->cloudinary->upload($image, env('CLOUDINARY_FOLDER') . $this->upload_path);
+
+                    $url = $res['secure_url'];
+                    $public_id  = $res['public_id'];
                     $productimage = new ProductImage();
                     $productimage->url =  $url;
                     $productimage->product_id =  $id;
                     $productimage->image_type =  1;
+                    $productimage->public_id =  $public_id;
                     $productimage->save();
                     $stt++;
                 }
                 break;
             default:
                 $image = ProductImage::find($select_update);
-                unlink($image->url);
+                $this->cloudinary->deleteImage($image->public_id);
                 $image->delete();
         }
     }

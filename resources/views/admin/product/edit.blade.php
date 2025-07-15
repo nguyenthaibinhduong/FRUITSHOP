@@ -290,6 +290,9 @@
                                         <div class="card-border-body">
                                             <label> Ảnh sản phẩm </label>
                                             <input type="file" class="form-control" name="image">
+                                            @if ($product->image[0]->url)
+                                                <img width="100px" src="{{ $product->image[0]->url }}" alt="">
+                                            @endif
                                             @error('image')
                                                 <span class="text-danger">{{ $message }}</span>
                                             @enderror

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('url');
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->integer('image_type')->default(0);
+            $table->string('public_id')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

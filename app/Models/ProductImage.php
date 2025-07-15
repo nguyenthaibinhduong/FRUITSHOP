@@ -13,7 +13,8 @@ class ProductImage extends Model
     protected $fillable = [
         'url',
         'product_id',
-        'image_type'
+        'image_type',
+        'public_id',
     ];
 
     // Mối quan hệ với sản phẩm
