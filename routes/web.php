@@ -14,11 +14,13 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InformationController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProductAttributeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SectionController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UserController;
@@ -232,6 +234,29 @@ Route::prefix($admin_prefix)->middleware('authAdmin')->group(function () use ($a
     $controller = CloudinaryController::class;
     Route::prefix($prefix)->group(function () use ($controller, $prefix) {
         Route::get('/{path?}', [$controller, 'listAssets'])->where('path', '.*')->name('media');
+    });
+
+    //===========================PAGE====================
+    $prefix = 'page';
+    $controller = PageController::class;
+    Route::prefix($prefix)->group(function () use ($controller, $prefix) {
+        Route::get('/', [$controller, 'index'])->name($prefix);
+        Route::get('/create', [$controller, 'create'])->name($prefix . '.create');
+        Route::post('/store', [$controller, 'store'])->name($prefix . '.store');
+        Route::get('/edit/{id}', [$controller, 'edit'])->name($prefix . '.edit');
+        Route::put('/update/{id}', [$controller, 'update'])->name($prefix . '.update');
+        Route::get('/delete/{id}', [$controller, 'delete'])->name($prefix . '.delete');
+    });
+    //===========================SECTION====================
+    $prefix = 'section';
+    $controller = SectionController::class;
+    Route::prefix($prefix)->group(function () use ($controller, $prefix) {
+        Route::get('/', [$controller, 'index'])->name($prefix);
+        Route::get('/create', [$controller, 'create'])->name($prefix . '.create');
+        Route::post('/store', [$controller, 'store'])->name($prefix . '.store');
+        Route::get('/edit/{id}', [$controller, 'edit'])->name($prefix . '.edit');
+        Route::put('/update/{id}', [$controller, 'update'])->name($prefix . '.update');
+        Route::get('/delete/{id}', [$controller, 'delete'])->name($prefix . '.delete');
     });
 });
 
