@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Section;
 use App\Models\Block;
+use App\Models\Position;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -11,7 +12,8 @@ class SectionController extends Controller
 {
     public function create()
     {
-        return view('admin.section.create');
+        $positions = Position::where('type',1)->get();
+        return view('admin.section.create',compact('positions'));
     }
 
     public function store(Request $request)

@@ -60,29 +60,91 @@
         function addBlock() {
             const wrapper = document.getElementById('blocks-wrapper');
             const html = `
-            <div class="card p-4 mb-3 border position-relative ">
-                <button type="button" class="btn-close position-absolute top-0 end-0" onclick="this.parentElement.remove()"></button>
-                <div class="mb-2">
-                    <label>Tiêu đề Block</label>
-                    <input type="text" name="blocks[${blockIndex}][title]" class="form-control" required>
-                </div>
-                <div class="mb-2">
-                    <label>Loại Block</label>
-                    <select name="blocks[${blockIndex}][type]" class="form-select" required>
-                        <option value="text">Text</option>
-                        <option value="image">Image</option>
-                        <option value="video">Video</option>
-                        <option value="html">HTML</option>
-                    </select>
-                </div>
-                <div class="mb-2">
-                    <label>Nội dung</label>
-                    <textarea name="blocks[${blockIndex}][content]" class="form-control" rows="3"></textarea>
-                </div>
+    <div class="card p-4 mb-3 border position-relative" id="block-${blockIndex}">
+        <button type="button" class="btn-close position-absolute top-0 end-0" onclick="this.parentElement.remove()"></button>
+
+        <div class="mb-2">
+            <label>Tiêu đề Block</label>
+            <input type="text" name="blocks[${blockIndex}][title]" class="form-control" required>
+        </div>
+
+        <div class="mb-2">
+            <label>Loại Block</label>
+            <select name="blocks[${blockIndex}][type]" class="form-select" required>
+                <option value="text">Text</option>
+                <option value="image">Image</option>
+                <option value="video">Video</option>
+                <option value="html">HTML</option>
+            </select>
+        </div>
+
+        <div class="mb-2">
+            <label>Nội dung</label>
+            <textarea name="blocks[${blockIndex}][content]" class="form-control" rows="3"></textarea>
+        </div>
+
+        <div class="mb-2">
+            <label>Chọn vị trí</label>
+            <select name="blocks[${blockIndex}][position_mode]" class="form-select" onchange="toggleCustom(${blockIndex}, this)">
+                <option value="default">-- Chọn vị trí có sẵn --</option>
+                @foreach ($positions as $position)
+                    <option value="{{ $position->id }}">{{ $position->name }} ({{ $position->code }})</option>
+                @endforeach
+                <option value="custom">+ Tùy chỉnh vị trí</option>
+            </select>
+            <input type="hidden" name="blocks[${blockIndex}][position_id]" id="block-${blockIndex}-position-id">
+        </div>
+
+        <div class="row g-3 custom-position d-none" id="block-${blockIndex}-custom">
+            <div class="col-md-2">
+                <label>Row</label>
+                <input type="number" class="form-control" name="blocks[${blockIndex}][row]">
             </div>
-        `;
+            <div class="col-md-2">
+                <label>Col</label>
+                <input type="number" class="form-control" name="blocks[${blockIndex}][col]">
+            </div>
+            <div class="col-md-2">
+                <label>Width</label>
+                <input type="number" class="form-control" name="blocks[${blockIndex}][width]">
+            </div>
+            <div class="col-md-2">
+                <label>Width SM</label>
+                <input type="number" class="form-control" name="blocks[${blockIndex}][width_sm]">
+            </div>
+            <div class="col-md-2">
+                <label>Width MD</label>
+                <input type="number" class="form-control" name="blocks[${blockIndex}][width_md]">
+            </div>
+            <div class="col-md-2">
+                <label>Width LG</label>
+                <input type="number" class="form-control" name="blocks[${blockIndex}][width_lg]">
+            </div>
+            <div class="col-md-2">
+                <label>Align</label>
+                <select class="form-select" name="blocks[${blockIndex}][align]">
+                    <option value="left">Trái</option>
+                    <option value="center">Giữa</option>
+                    <option value="right">Phải</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    `;
             wrapper.insertAdjacentHTML('beforeend', html);
             blockIndex++;
+        }
+
+        function toggleCustom(index, selectEl) {
+            const customForm = document.getElementById(`block-${index}-custom`);
+            const hiddenInput = document.getElementById(`block-${index}-position-id`);
+            if (selectEl.value === 'custom') {
+                customForm.classList.remove('d-none');
+                hiddenInput.value = '';
+            } else {
+                customForm.classList.add('d-none');
+                hiddenInput.value = selectEl.value;
+            }
         }
     </script>
 @endsection

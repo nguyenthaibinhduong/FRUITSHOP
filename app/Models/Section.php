@@ -8,15 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Section extends Model
 {
     use HasFactory;
-    public function positions()
-    {
-        return $this->hasMany(Position::class);
-    }
+    protected $fillable = [
+        'name',
+        'code',
+        'type',
+        'description'
+    ];
 
     public function pages()
     {
-        return $this->belongsToMany(Page::class, 'page_section')
+        return $this->belongsToMany(Page::class)
             ->withPivot('order')
-            ->withTimestamps();
+            ->withTimestamps()
+            ->orderBy('page_section.order');
+    }
+
+    public function blocks()
+    {
+        return $this->hasMany(Block::class);
     }
 }

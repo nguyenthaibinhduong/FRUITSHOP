@@ -8,12 +8,24 @@ use Illuminate\Database\Eloquent\Model;
 class Block extends Model
 {
     use HasFactory;
-    protected $fillable = ['title', 'code', 'type', 'content', 'status', 'css', 'script'];
+    protected $fillable = [
+        'title',
+        'code',
+        'type',
+        'content',
+        'class',
+        'status',
+        'section_id',
+        'position_id'
+    ];
 
-    public function positions()
+    public function section()
     {
-        return $this->belongsToMany(Position::class, 'block_position')
-            ->withPivot('order', 'active')
-            ->withTimestamps();
+        return $this->belongsTo(Section::class);
+    }
+
+    public function position()
+    {
+        return $this->belongsTo(Position::class);
     }
 }
