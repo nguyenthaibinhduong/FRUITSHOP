@@ -51,7 +51,7 @@
                         <div class="col-sm-6 col-12">
                             <div class="mb-3">
                                 <label class="form-label">Slug <span class="text-red">*</span></label>
-                                <input name="slug" type="text" class="form-control" placeholder="Nhập slug" required>
+                                <input name="slug" type="text" class="form-control" placeholder="Nhập slug">
                                 @error('slug')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
@@ -81,23 +81,16 @@
                         <div class="col-sm-12 col-12">
                             <div class="mb-3">
                                 <label class="form-label">Gắn Sections</label>
-                                <div class="row">
+                                <select name="sections[]" class="form-select" multiple>
                                     @foreach ($sections as $section)
-                                        <div class="col-md-4">
-                                            <div class="form-check">
-                                                <input type="checkbox" name="sections[]" value="{{ $section->id }}"
-                                                    class="form-check-input" id="section-{{ $section->id }}">
-                                                <label class="form-check-label" for="section-{{ $section->id }}">
-                                                    {{ $section->name }}
-                                                </label>
-                                            </div>
-                                        </div>
+                                        <option value="{{ $section->id }}">[ section id = {{ $section->name }}]</option>
                                     @endforeach
-                                </div>
+                                </select>
                                 @error('sections')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
+
                         </div>
 
                     </div> <!-- /.row -->

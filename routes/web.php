@@ -306,3 +306,8 @@ Route::prefix('payment')->group(function () {
     Route::post('/mm-pay', [PaymentController::class, 'momo_payment'])->name('mm-pay');
     Route::get('mm/mmpay_return', [PaymentController::class, 'momo_return'])->name('momo_return');
 });
+
+
+
+
+Route::get('/{slug}', [PageController::class, 'showBySlug'])->name('page.slug');

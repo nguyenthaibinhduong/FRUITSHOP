@@ -37,10 +37,10 @@
                                    <a href="{{ route('banner') }}">Quản lý Banner</a>
                                </li>
                                <li>
-                                   <a href="{{ route('page.create') }}">Quản Trang</a>
+                                   <a href="{{ route('page') }}">Quản Trang</a>
                                </li>
                                <li>
-                                   <a href="{{ route('section.create') }}">Quản lý Section</a>
+                                   <a href="{{ route('section') }}">Quản lý Section</a>
                                </li>
                            </ul>
                        </div>

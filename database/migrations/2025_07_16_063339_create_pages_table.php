@@ -35,7 +35,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('code')->unique();
-            $table->enum('type', [0, 1])->default(0); // mac dinh
+            $table->enum('type', [0, 1]); // mac dinh
             $table->unsignedInteger('row')->default(1);
             $table->unsignedInteger('col')->default(1);
             $table->unsignedInteger('width')->default(12);
@@ -51,7 +51,7 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('code');
-            $table->enum('type', ['html', 'image'])->default('html'); // html, image, video, ...
+            $table->enum('type', ['html', 'image', 'text']); // html, image, video, ...
             $table->longText('content');
             $table->string('class');
             $table->boolean('status')->default(true);
@@ -62,8 +62,8 @@ return new class extends Migration
 
         Schema::create('page_section', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('page_id')->constrained()->onDelete('cascade');
-            $table->foreignId('section_id')->constrained()->onDelete('cascade');
+            $table->foreignId('page_id')->constrained('pages')->onDelete('cascade');
+            $table->foreignId('section_id')->constrained('sections')->onDelete('cascade');
             $table->unsignedInteger('order')->default(0);
             $table->timestamps();
         });

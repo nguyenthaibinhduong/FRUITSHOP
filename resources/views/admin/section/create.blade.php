@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        <div class="card-border bg-white mb-4">
+        <div class="card-border mb-4">
             <div class="card-border-title d-flex justify-content-between">
                 <span>Danh sách Block</span>
                 <button type="button" class="btn btn-sm btn-primary" onclick="addBlock()">+ Thêm Block</button>
@@ -61,73 +61,80 @@
             const wrapper = document.getElementById('blocks-wrapper');
             const html = `
     <div class="card p-4 mb-3 border position-relative" id="block-${blockIndex}">
-        <button type="button" class="btn-close position-absolute top-0 end-0" onclick="this.parentElement.remove()"></button>
-
-        <div class="mb-2">
-            <label>Tiêu đề Block</label>
+        <button style="top:10px; right:10px;" type="button" class="btn-close position-absolute" onclick="this.parentElement.remove()"></button>
+<div class="row">
+        <div class="col-md-6">
+            <label class="form-label">Tiêu đề Block</label>
             <input type="text" name="blocks[${blockIndex}][title]" class="form-control" required>
         </div>
 
-        <div class="mb-2">
-            <label>Loại Block</label>
+        <div class="col-md-6">
+            <label class="form-label">Loại Block</label>
             <select name="blocks[${blockIndex}][type]" class="form-select" required>
+                <option value="html" selected>HTML</option>
                 <option value="text">Text</option>
                 <option value="image">Image</option>
-                <option value="video">Video</option>
-                <option value="html">HTML</option>
+               
             </select>
         </div>
+         </div>
 
         <div class="mb-2">
-            <label>Nội dung</label>
+            <label class="form-label">Nội dung</label>
             <textarea name="blocks[${blockIndex}][content]" class="form-control" rows="3"></textarea>
         </div>
 
         <div class="mb-2">
-            <label>Chọn vị trí</label>
+            <label class="form-label">Chọn vị trí</label>
             <select name="blocks[${blockIndex}][position_mode]" class="form-select" onchange="toggleCustom(${blockIndex}, this)">
                 <option value="default">-- Chọn vị trí có sẵn --</option>
+                <option value="custom">+ Tùy chỉnh vị trí</option>
                 @foreach ($positions as $position)
                     <option value="{{ $position->id }}">{{ $position->name }} ({{ $position->code }})</option>
                 @endforeach
-                <option value="custom">+ Tùy chỉnh vị trí</option>
             </select>
             <input type="hidden" name="blocks[${blockIndex}][position_id]" id="block-${blockIndex}-position-id">
         </div>
 
         <div class="row g-3 custom-position d-none" id="block-${blockIndex}-custom">
-            <div class="col-md-2">
-                <label>Row</label>
-                <input type="number" class="form-control" name="blocks[${blockIndex}][row]">
+            <div class="col-md-3">
+                <label class="form-label">Vị trí hàng </label>
+                <input type="number" class="form-control" name="blocks[${blockIndex}][row]" value="1">
             </div>
-            <div class="col-md-2">
-                <label>Col</label>
-                <input type="number" class="form-control" name="blocks[${blockIndex}][col]">
+            <div class="col-md-3">
+                <label class="form-label">Vị trí cột</label>
+                <input type="number" class="form-control" name="blocks[${blockIndex}][col]" value="1">
             </div>
-            <div class="col-md-2">
-                <label>Width</label>
-                <input type="number" class="form-control" name="blocks[${blockIndex}][width]">
-            </div>
-            <div class="col-md-2">
-                <label>Width SM</label>
-                <input type="number" class="form-control" name="blocks[${blockIndex}][width_sm]">
-            </div>
-            <div class="col-md-2">
-                <label>Width MD</label>
-                <input type="number" class="form-control" name="blocks[${blockIndex}][width_md]">
-            </div>
-            <div class="col-md-2">
-                <label>Width LG</label>
-                <input type="number" class="form-control" name="blocks[${blockIndex}][width_lg]">
-            </div>
-            <div class="col-md-2">
-                <label>Align</label>
+            <div class="col-md-3">
+                <label class="form-label">Căn chỉnh nội dung</label>
                 <select class="form-select" name="blocks[${blockIndex}][align]">
-                    <option value="left">Trái</option>
+                    <option value="left" selected>Trái</option>
                     <option value="center">Giữa</option>
                     <option value="right">Phải</option>
                 </select>
             </div>
+         <div class="col-md-3">
+                <label class="form-label">Class Style</label>
+                <input type="number" class="form-control" name="blocks[${blockIndex}][class]" value="">
+            </div>
+        <div class="col-md-3">
+            <label class="form-label">Kích thước</label>
+            <input type="number" class="form-control" name="blocks[${blockIndex}][width]" min="1" max="12" value="12">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Kích thước Mobile </label>
+            <input type="number" class="form-control" name="blocks[${blockIndex}][width_sm]" min="1" max="12" value="12">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Kích thước Table</label>
+            <input type="number" class="form-control" name="blocks[${blockIndex}][width_md]" min="1" max="12" value="12">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Kích thước Desktop</label>
+            <input type="number" class="form-control" name="blocks[${blockIndex}][width_lg]" min="1" max="12" value="12">
+        </div>
+
+            
         </div>
     </div>
     `;
