@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\Brand;
 use App\Models\Category;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -38,12 +37,21 @@ class ProductSeeder extends Seeder
             ['id' => 4, 'name' => 'Meatdeli'],
         ]);
 
-
-        $productImage_link = 'img/product/';
-        $arr_image = [];
-        for ($i = 1; $i <= 12; $i++) {
-            array_push($arr_image, $productImage_link . 'product-' . $i . '.jpg');
-        }
+        // Mảng ảnh Cloudinary
+        $arr_image = [
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460201/product-1_aiexrr.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460201/product-2_zicvkg.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460201/product-3_ostt20.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460201/product-4_dfpwne.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460202/product-5_uyvu2f.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460201/product-6_q0hsb3.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460201/product-7_vuahop.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460201/product-8_tre5sb.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460202/product-9_aymsww.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460202/product-10_wbfpps.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460202/product-11_moizkm.jpg',
+            'https://res.cloudinary.com/dvimvchbw/image/upload/v1752460203/product-12_iucibd.jpg'
+        ];
 
         for ($i = 1; $i <= 100; $i++) {
             $category = Category::find(mt_rand(1, 10));
@@ -53,9 +61,9 @@ class ProductSeeder extends Seeder
             DB::table('products')->insert([
                 'id' => $i,
                 'name' => $category->name . ' ' . $brand->name . ' ' . mt_rand(100, 999),
-                'description' => 'Sản phẩm ' . $category->name . ' ' . $brand->name . ' ' . mt_rand(100, 999) . ' chất lượng cao 100%',
-                'longdescription' => 'This is a long description of product ',
-                'price' => (mt_rand(100, 999)) * 1000,
+                'description' => 'Sản phẩm ' . $category->name . ' ' . $brand->name . ' chất lượng cao 100%',
+                'longdescription' => 'This is a long description of product ' . $i,
+                'price' => mt_rand(100, 999) * 1000,
                 'sale_percent' => Arr::random([0.8, 0.9, 0.7, 1]),
                 'quantity' => Arr::random([0, 10, 20, 30, 100, 50, 60]),
                 'uploaded' => 1,
