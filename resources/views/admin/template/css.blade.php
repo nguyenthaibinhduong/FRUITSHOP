@@ -3,13 +3,13 @@
   ************ -->
 
 <!-- Animated css -->
-<link rel="stylesheet" href="{{ asset('admins/assets/css/animate.css') }}">
+<link rel="stylesheet" href="{{ secure_asset('admins/assets/css/animate.css') }}">
 
 <!-- Bootstrap font icons css -->
-<link rel="stylesheet" href="{{ asset('admins/assets/fonts/bootstrap/bootstrap-icons.css') }}">
+<link rel="stylesheet" href="{{ secure_asset('admins/assets/fonts/bootstrap/bootstrap-icons.css') }}">
 
 <!-- Main css -->
-<link rel="stylesheet" href="{{ asset('admins/assets/css/main.min.css') }}">
+<link rel="stylesheet" href="{{ secure_asset('admins/assets/css/main.min.css') }}">
 
 
 <!-- *************
@@ -67,4 +67,4 @@
     }
 </style>
 <!-- Scrollbar CSS -->
-<link rel="stylesheet" href="{{ asset('admins/assets/vendor/overlay-scroll/OverlayScrollbars.min.css') }}">
+<link rel="stylesheet" href="{{ secure_asset('admins/assets/vendor/overlay-scroll/OverlayScrollbars.min.css') }}">

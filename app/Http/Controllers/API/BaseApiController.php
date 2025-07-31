@@ -25,7 +25,11 @@ class BaseApiController extends Controller
             // 2. Lọc theo trường bất kỳ
             if ($request->filled('filters')) {
                 foreach ($request->filters as $field => $value) {
-                    $query->where($field, $value);
+                    if (is_array($value)) {
+                        $query->whereIn($field, $value);
+                    } else {
+                        $query->where($field, $value);
+                    }
                 }
             }
 
@@ -47,7 +51,7 @@ class BaseApiController extends Controller
             }
 
             // 6. Phân trang
-            $perPage = $request->get('per_page', 10); // Mặc định 10 bản ghi
+            $perPage = $request->get('per_page', $request->limit ?? 10); // Mặc định 10 bản ghi
             $data = $query->paginate($perPage);
 
             return ResponseHelper::success($data, 'Lấy danh sách thành công');
@@ -60,6 +64,7 @@ class BaseApiController extends Controller
     public function store(Request $request)
     {
         try {
+
             $item = $this->model::create($request->all());
             return ResponseHelper::success($item, 'Tạo mới thành công', 201);
         } catch (Exception $e) {
@@ -67,10 +72,17 @@ class BaseApiController extends Controller
         }
     }
 
-    public function show($id)
+    public function show($id, Request $request)
     {
         try {
-            $item = $this->model::findOrFail($id);
+            $query = $this->model::query();
+
+            if ($request->filled('with')) {
+                $relations = explode(',', $request->with);
+                $query->with($relations);
+            }
+
+            $item = $query->findOrFail($id); // Dùng chính query đã cấu hình
             return ResponseHelper::success($item, 'Lấy chi tiết thành công');
         } catch (ModelNotFoundException $e) {
             return ResponseHelper::error('Không tìm thấy dữ liệu', 404);
@@ -78,6 +90,7 @@ class BaseApiController extends Controller
             return ResponseHelper::error($e->getMessage(), 500);
         }
     }
+
 
     public function update(Request $request, $id)
     {
